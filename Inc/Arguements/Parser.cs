@@ -26,16 +26,21 @@ namespace _cmd
 
         ~Parser() { }
 
-        public void add_optional(string arg, ref bool decl, bool toSetTo)
+        public Parser add_optional(string arg, ref bool decl, bool toSetTo)
         {
-            foreach(string q in _args)
+            if (_args.Length == 0)
+                return this;
+
+            foreach (string q in _args)
             {
                 if(q == arg)
                 {
                     decl = toSetTo;
-                    return;
+                    return this;
                 }
             }
+
+            return null;
         }
 
         public void set_error_on_required(string message, string title = "Error!")
@@ -48,18 +53,18 @@ namespace _cmd
             ErrorInfo.Add("true", new ErrorInformation() { _message = message, _title = title });
         }
 
-        public void add_required(string arg, ref bool decl, bool toSetTo)
+        public Parser add_required(string arg, ref bool decl, bool toSetTo)
         {
             foreach(string _arg in _args)
             {
                 if(_arg == arg)
                 {
                     decl = toSetTo;
-                    return;
+                    return this;
                 }
             }
 
-            
+            return null;
         }
     }
 }
