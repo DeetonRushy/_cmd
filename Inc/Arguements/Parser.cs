@@ -21,6 +21,7 @@ namespace _cmd
         public Parser(string[] args)
         {
             ErrorInfo = new Dictionary<string, ErrorInformation>();
+            _args = args;
         }
 
         ~Parser() { }
