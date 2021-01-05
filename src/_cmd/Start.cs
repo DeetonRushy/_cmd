@@ -24,6 +24,14 @@ namespace _cmd
 
             MakeCommand("##list", "__inter_list", _List_Cmd, "Internal list command, lists all commands.");
 
+            // We load the plugins once we have created the start object.
+            // Once loaded, they will be able to access our plugin API
+            // (which is not yet created.) 
+            // All files and commands can they be developed externally.
+
+            PluginLoader p_load = new PluginLoader();
+            p_load._LoadAll();
+
             while (true)
             {
                 #region __
