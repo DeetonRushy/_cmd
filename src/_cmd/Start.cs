@@ -25,7 +25,7 @@ namespace _cmd
 
             // We load the plugins once we have created the start object.
             // Once loaded, they will be able to access our plugin API
-            // (which is not yet created.) 
+            // which is now under development! -> _cmd.api
             // All files and commands can they be developed externally.
 
             PluginLoader p_load = new PluginLoader();
