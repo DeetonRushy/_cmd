@@ -63,6 +63,18 @@ namespace _cmd
                     return this;
                 }
             }
+            
+            if(ErrorInfo.ContainsKey("true"))
+            {
+                
+                MessageBox.Show(
+                    ErrorInfo["true"]._message,
+                    ErrorInfo["true"]._title
+                );
+                
+                Environment.Exit(0)
+                
+            }
 
             return null;
         }
