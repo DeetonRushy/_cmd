@@ -16,8 +16,7 @@ namespace _cmd
             MakeCommand("##help", "__inter_help", () =>
             {
                 Console.WriteLine();
-                Console.WriteLine("There is currently no built in commands other than this.");
-                Console.WriteLine("If you're using a plugin, use their special help command.");
+                Console.WriteLine("##list : lists all commands.");
                 return _cmdReturn._C_SUCCESS;
 
             }, "The basic help command built into _cmd.");

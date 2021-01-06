@@ -9,9 +9,7 @@ namespace _cmd
     class PluginLoader : PluginStorage
     {
         const string dir = "data\\plugins";
-
         private object _lock = new object();
-
         public static bool allow_plugins = true;
 
         public string[] _Files
@@ -27,22 +25,21 @@ namespace _cmd
 
         public bool _LoadAll()
         {
-
             lock (_lock)
             {
-                if(allow_plugins != true)
+                if(!allow_plugins)
                 {
-                    return false;
+                    return allow_plugins;
                 }
             }
 
             foreach(string _file in _Files)
             {
-                if(_file.EndsWith(".dll"))
+                if (_file.EndsWith(".dll"))
                 {
                     try
                     {
-                        System.Reflection.Assembly.LoadFile(_file);
+                        System.Reflection.Assembly.LoadFile(System.IO.Directory.GetCurrentDirectory() + "\\" + _file);
                     }
                     catch
                     {
@@ -61,7 +58,9 @@ namespace _cmd
 
             foreach(Type plugin in all_loaded_plugins)
             {
-                _pluginLoaded((IPlugin)Activator.CreateInstance(plugin));
+                IPlugin _plugin = (IPlugin)Activator.CreateInstance(plugin);
+                _plugin._Go(); // call their initialization method.
+                _pluginLoaded(_plugin);
             }
 
             return true;

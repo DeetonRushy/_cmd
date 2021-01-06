@@ -15,19 +15,18 @@ namespace _cmd
                 System.IO.Directory.CreateDirectory(directory);
             }
 
-            foreach(string _dir in System.IO.Directory.GetFiles(directory, "*.*", System.IO.SearchOption.AllDirectories))
-            {
-                files.Append(_dir);
-            }
+            _direc = directory;
         }
 
         ~PluginRetreiver() { }
 
-        private string[] files = { };
+        private string _direc;
 
         public string[] get()
         {
-            return files;
+            string[] _plgs = System.IO.Directory.GetFiles(_direc, "*.*", System.IO.SearchOption.AllDirectories);
+
+            return _plgs;
         }
     }
 }

@@ -10,6 +10,6 @@ namespace _cmd
     {
         string Name { get; }
         string Explaination { get; }
-        void _Go(string _params);
+        void _Go();
     }
 }

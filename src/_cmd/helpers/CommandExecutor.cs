@@ -19,7 +19,7 @@ namespace _cmd
         {
             if (!Exists(_rname))
             {
-                ErrorOutputHandler.Out(_cmdReturn._C_FAILURE, $"{_rname} doesn't exist as a command.");
+                ErrorOutputHandler.Out(_cmdReturn._C_FAILURE, $"{_rname} doesn't exist as a command. Try typing ##help.");
                 return _cmdReturn._C_FAILURE;
             }
 
@@ -39,6 +39,7 @@ namespace _cmd
             {
                 try
                 {
+                    Console.WriteLine("Command -> " + _c.Key);
                     Console.WriteLine("Name -> " + _c.Value.Name);
                     Console.WriteLine("Description -> " + _c.Value.Description);
                     Console.WriteLine();
