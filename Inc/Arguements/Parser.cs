@@ -40,7 +40,7 @@ namespace _cmd
                 }
             }
 
-            return null;
+            return this;
         }
 
         public Parser set_error_on_required(string message, string title = "Error!")
