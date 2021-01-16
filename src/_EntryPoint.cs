@@ -11,8 +11,6 @@ namespace _cmd
     {
         static void Main(string[] args)
         {
-            bool c_Exit = false;
-            bool KillLauncherProcess = false;
             Parser arg_worker = new Parser(args);
 
             arg_worker
