@@ -68,14 +68,18 @@ namespace _cmd
 
             if (ErrorInfo.ContainsKey("true"))
             {
-                string text = ErrorInfo["true"]._message;
-                string title = ErrorInfo["true"]._title;
 
-                System.Windows.Forms.MessageBox.Show(text + " : " + arg, title);
-                Environment.Exit(0);
+                MessageBox.Show(
+                    ErrorInfo["true"]._message,
+                    ErrorInfo["true"]._title
+                );
+
+                Environment.Exit(0)
+
+
             }
 
-            return null;
+
         }
     }
 }
