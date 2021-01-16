@@ -80,7 +80,7 @@ namespace _cmd
                                 UseShellExecute = false,
                                 RedirectStandardOutput = true,
                                 CreateNoWindow = true,
-                                WorkingDirectory = System.IO.Directory.GetCurrentDirectory() + "\\data\\data\\plugins\\exec",
+                                WorkingDirectory = System.IO.Directory.GetCurrentDirectory() + "\\data\\plugins\\exec",
                                 WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
                             }
                         };
