@@ -10,6 +10,8 @@ namespace _cmd
     {
         public static void Out(_cmdReturn status, string additional = "")
         {
+            G.L.OG("Outputing information on last error & additional information.");
+
             string err = new ErrorTranslator(status).Error;
             string time = DateTime.Now.ToShortTimeString();
 

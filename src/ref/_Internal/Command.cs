@@ -8,11 +8,19 @@ namespace _cmd
 {
     class Command
     {
-        public Command(string _name, Func<_cmdReturn> fmt, string _desc)
+        public Command(string _name, Func<_cmdReturn> fmt, string _desc, params string[] _Arguements)
         {
+            G.L.OG("New command has been created!",
+                "#################################################",
+                _name,
+                fmt.Method.MethodHandle.Value.ToString(),
+                _desc,
+                "#################################################");
+
             Name = _name;
             Function = fmt;
             Description = _desc;
+            Arguements = _Arguements;
         }
 
         ~Command() { }
@@ -37,5 +45,12 @@ namespace _cmd
             private set;
 
         } = "default";
+
+        public string[] Arguements
+        {
+            get;
+            private set;
+
+        } = { };
     }
 }

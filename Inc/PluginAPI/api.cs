@@ -76,7 +76,8 @@ namespace TestDll
 
         public void _Go()
         {
-
+            Init_Class _cls = new Init_Class();
+            _cls.Initialize();
         }
     }
 

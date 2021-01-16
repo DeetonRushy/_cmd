@@ -21,6 +21,7 @@ namespace _cmd
             TranslationUnit.Add(_cmdReturn._C_IOERROR, "There was an IO error.");
             TranslationUnit.Add(_cmdReturn._C_SUCCESS, "The operation completed sucessfully.");
             TranslationUnit.Add(_cmdReturn._C_UNKNOWN_ERROR, "There was an unknown error.");
+            TranslationUnit.Add(_cmdReturn._C_SYSTEM_ERROR, "There was a problem somewhere on the system. (Usually process related.)");
 
             #endregion
 
