@@ -21,6 +21,8 @@ namespace _cmd
         ~PluginRetreiver() { }
 
         private string _direc;
+        
+        // VERY unsafe right now, will be sorted vsoon
 
         public string[] get()
         {

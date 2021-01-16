@@ -63,6 +63,33 @@ namespace _cmd
                 string text = ErrorInfo["true"]._message;
                 string title = ErrorInfo["true"]._title;
 
+                if (String.IsNullOrEmpty(text) || String.IsNullOrEmpty(title))
+                {
+                    // if either fail, we can't trust what is in them.
+
+                    text = "Missing a required arguement.";
+                    title = "Error.";
+                }
+
+                System.Windows.Forms.MessageBox.Show(text, title);
+                return Exit(-1);
+            }
+
+            Environment.Exit(err);
+            return this;
+        }
+            return this;
+        }
+
+        public Parser Exit(int err)
+        {
+            G.L.OG("Parser.Exit began, required arguement failed.");
+
+            if (ErrorInfo.ContainsKey("true"))
+            {
+                string text = ErrorInfo["true"]._message;
+                string title = ErrorInfo["true"]._title;
+
                 if(String.IsNullOrEmpty(text) || String.IsNullOrEmpty(title))
                 {
                     // if either fail, we can't trust what is in them.
