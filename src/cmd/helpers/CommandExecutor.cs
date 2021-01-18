@@ -13,11 +13,6 @@ namespace _cmd
             Instance = this;
         }
 
-        public CommandExecutor(ref CommandExecutor other, string a, string b, Func<_cmdReturn> c, string d)
-        {
-            other.CreateCommand(a, b, c, d);
-        }
-
         ~CommandExecutor() { }
 
         protected static CommandExecutor Instance
