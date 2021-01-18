@@ -19,7 +19,7 @@ namespace _cmd
 
             Start _main = new Start();
             G.L.OG("Beginning CrtMain.");
-            _main._CrtMain_Start();
+            _main._CrtMain_Start(); // no idea why I called it CrtMain, just looks cool I guess lol.
         }
     }
 }
