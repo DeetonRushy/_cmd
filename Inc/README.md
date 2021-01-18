@@ -16,7 +16,7 @@ This WILL be an alternative to native mscorblib IDictionarys & Dictionarys. Why?
 
 Small logging class. This appends text to a file & sorts logging directory information etc.
 
-This is extremely messy, I made this a long while ago and plan to sort it out in the coming days.
+This is extremely messy, I made this a long while ago and plan to sort it out.
 
 ## PluginAPI
 
