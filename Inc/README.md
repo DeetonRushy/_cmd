@@ -10,7 +10,7 @@ This is just a simple command line arguement 'parser'. It doesn't really parse a
 
 ## Dictionary (un-finished)
 
-This WILL be an alternative to native mscorblib IDictionarys & Dictionarys. Why? Having our own dictionary allows us to add anything we like to it when needed.
+This WILL be an alternative to native mscorlib IDictionarys & Dictionarys. Why? Having our own dictionary allows us to add anything we like to it when needed.
 
 ## Logging
 
