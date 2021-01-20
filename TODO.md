@@ -15,3 +15,5 @@ I have some plans to cleanup the entire repo.
 | 1.0.0   | :x:              | :x:  | :x:              | :x:       |
 | 1.0.1   | :x:              | :x:  | :white_check_mark:| :x:      |
 | 1.0.1   | :white_check_mark:              | :white_check_mark:  | :white_check_mark:| :white_check_mark:      |
+
+Following versions wont be listed here due to all changes being complete.
