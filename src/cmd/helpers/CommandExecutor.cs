@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
-namespace _cmd
+namespace cmd
 {
-    class CommandExecutor : CommandStorage
+    class CommandExecutor : CommandStorage, IDisposable
     {
         public CommandExecutor()
         {
@@ -15,33 +14,55 @@ namespace _cmd
 
         ~CommandExecutor() { }
 
+        public void Dispose()
+        {
+            SafeHandle _handle = new SafeFileHandle(IntPtr.Zero, true);
+
+            if(_handle?.DangerousGetHandle() != null)
+            {
+                _handle?.Dispose();
+            }
+        }
+
         protected static CommandExecutor Instance
         {
             get;
             private set;
         }
 
-        public _cmdReturn ExecuteCommand(string _rname) // rname = readable name, the name they type.
+        // This is the main function that is executes in our main loop.
+        // We check if entered command exists & execute it.
+        // On failure to exist, we output the translated version of the return type.
+        // And give some extra information on the error.
+
+        public RetType ExecuteCommand(string _rname) // rname = readable name, the name they type.
         {
             if (!Exists(_rname))
             {
                 G.L.OG("User ran command that doesn't exist.");
-                ErrorOutputHandler.Out(_cmdReturn._C_FAILURE, $"{_rname} doesn't exist as a command. Try typing ##help.");
-                return _cmdReturn._C_FAILURE;
+                ErrorOutputHandler.Out(RetType._C_FAILURE, $"{_rname} doesn't exist as a command. Try typing 'help'.");
+                return RetType._C_FAILURE;
             }
 
             G.L.OG("Executing " + _rname);
             return Run(_rname);
         }
 
-        public bool MakeCommand(string _typ, string _name, Func<_cmdReturn> fmt, string _desc)
+        // The main function to create a command.
+
+        // Nothing special happens in here, we just return an internal function
+        // from command storage.
+
+        public bool MakeCommand(string _typ, string _name, Func<RetType> fmt, string _desc)
         {
             return CreateCommand(_typ, _name, fmt, _desc);
         }
 
-        public _cmdReturn _List_Cmd()
+        #region command_definitions
+
+        public RetType _Listcmd()
         {
-            _cmdReturn result = _cmdReturn._C_SUCCESS;
+            RetType result = RetType._C_SUCCESS;
 
             foreach(KeyValuePair<string, Command> _c in StorageWorkload)
             {
@@ -54,22 +75,22 @@ namespace _cmd
                 }
                 catch
                 {
-                    result = _cmdReturn._C_ACCESSVIOLATION;
+                    result = RetType._C_ACCESSVIOLATION;
                 }
             }
 
             return result;
         }
 
-        public _cmdReturn _List_Cmd_Simple()
+        public RetType _Listcmd_Simple()
         {
-            _cmdReturn result = _cmdReturn._C_SUCCESS;
+            RetType result = RetType._C_SUCCESS;
 
             foreach (KeyValuePair<string, Command> _c in StorageWorkload)
             {
                 try
                 {
-                    #region _List_Cmd_Simple_Output
+                    #region _Listcmd_Simple_Output
 
                     Console.Write("Command -> ");
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -85,11 +106,14 @@ namespace _cmd
                 }
                 catch
                 {
-                    result = _cmdReturn._C_ACCESSVIOLATION;
+                    result = RetType._C_ACCESSVIOLATION;
                 }
             }
 
             return result;
         }
+
+
+        #endregion
     }
 }

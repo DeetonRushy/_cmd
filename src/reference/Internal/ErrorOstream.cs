@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _cmd
+namespace cmd
 {
     class ErrorOutputHandler
     {
-        public static void Out(_cmdReturn status, string additional = "")
+        public static void Out(RetType status, string additional = "")
         {
             G.L.OG("Outputing information on last error & additional information.");
 

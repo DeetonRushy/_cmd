@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _cmd
+namespace cmd
 {
     class Command
     {
-        public Command(string _name, Func<_cmdReturn> fmt, string _desc, params string[] _Arguements)
+        public Command(string _name, Func<RetType> fmt, string _desc, params string[] _Arguements)
         {
             G.L.OG("New command has been created!",
                 "#################################################",
@@ -32,7 +32,7 @@ namespace _cmd
 
         } = "default";
 
-        public Func<_cmdReturn> Function
+        public Func<RetType> Function
         {
             get;
             private set;

@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace _cmd
+namespace cmd
 {
-    class _EntryPoint
+    class Entry
     {
         static void Main(string[] args)
         {
@@ -16,9 +16,9 @@ namespace _cmd
             arg_worker
                 .set_error_on_required("Missing a required arguement.")
                 .add_optional("--disable-plugins", ref PluginLoader.allow_plugins, false)
+                .add_optional("--disable-flush", ref Start.__flush_disabled__, true);
 
             Start _main = new Start();
-            G.L.OG("Beginning CrtMain.");
             _main._CrtMain_Start(); // no idea why I called it CrtMain, just looks cool I guess lol.
         }
     }

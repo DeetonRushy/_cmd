@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _cmd
+namespace cmd
 {
+    // super messy class, no comments until it's cleaned up.
+
     class PluginRetreiver
     {
         public PluginRetreiver(string directory)

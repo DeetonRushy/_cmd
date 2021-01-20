@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _cmd
+namespace cmd
 {
+    // Loaded plugin storage.
+
     class PluginStorage : CommandExecutor
     {
         protected List<IPlugin> _loaded { get; private set; }

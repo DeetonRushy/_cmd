@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _cmd
+namespace cmd
 {
     struct ErrorInformation
     {
@@ -23,7 +23,7 @@ namespace _cmd
             #region FileOG
             G.L.OG("Parser begun, arguements below.");
 
-            for(int i = 0; i < args.Length; i++)
+            for (int i = 0; i < args.Length; i++)
             {
                 G.L.OG($"arg{i} : {args[i]}");
             }
@@ -44,7 +44,7 @@ namespace _cmd
 
             foreach (string q in _args)
             {
-                if(q == arg)
+                if (q == arg)
                 {
                     decl = toSetTo;
                     return this;
@@ -54,34 +54,7 @@ namespace _cmd
             return this;
         }
 
-        public Parser Exit(int err)
-        {
-            G.L.OG("Parser.Exit began, required arguement failed.");
-
-            if (ErrorInfo.ContainsKey("true"))
-            {
-                string text = ErrorInfo["true"]._message;
-                string title = ErrorInfo["true"]._title;
-
-                if (String.IsNullOrEmpty(text) || String.IsNullOrEmpty(title))
-                {
-                    // if either fail, we can't trust what is in them.
-
-                    text = "Missing a required arguement.";
-                    title = "Error.";
-                }
-
-                System.Windows.Forms.MessageBox.Show(text, title);
-                return Exit(-1);
-            }
-
-            Environment.Exit(err);
-            return this;
-        }
-            return this;
-        }
-
-        public Parser Exit(int err)
+        private Parser Exit(int err)
         {
             G.L.OG("Parser.Exit began, required arguement failed.");
 
@@ -99,11 +72,10 @@ namespace _cmd
                 }
 
                 System.Windows.Forms.MessageBox.Show(text, title);
-                return Exit(-1);
             }
 
-            Environment.Exit(err);
-            return this;
+            Environment.Exit(0);
+            return this; // never reached.
         }
 
         public Parser set_error_on_required(string message, string title = "Error!")
@@ -119,6 +91,8 @@ namespace _cmd
             ErrorInfo.Add("true", new ErrorInformation() { _message = message, _title = title });
             return this;
         }
+
+        // Experimental, doesn't quite work as expected just yet.
 
         public Parser add_required_with_answer(string arg, ref string[] decl)
         {

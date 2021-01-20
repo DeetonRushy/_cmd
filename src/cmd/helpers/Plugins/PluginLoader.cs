@@ -4,13 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _cmd
+namespace cmd
 {
+
+    // The plugin loader, on construction we get the active plugins
+    // from the object PluginRetreiver. 
+
+    // This class inherits from PluginStorage, this allows us to store & track loaded plugins.
+    // We need to track & store them in order to load them & unload them.
+
     class PluginLoader : PluginStorage
     {
-        const string dir = "data\\plugins";
+        const string dir = "data\\plugins"; // we use a constant directory to make things easier.
         private object _lock = new object();
         public static bool allow_plugins = true;
+
+        public PluginLoader()
+        {
+            _Files = new PluginRetreiver(dir).get();
+        }
 
         public string[] _Files
         {
@@ -18,11 +30,11 @@ namespace _cmd
             private set;
         }
 
-        public PluginLoader()
-        {
-            _Files = new PluginRetreiver(dir).get();
-        }
 
+        /// <summary>
+        /// The main load all method. This loads & executes each plugin one by one.
+        /// </summary>
+        /// <returns>returns false if plugins are disabled, otherwise returns true.</returns>
         public bool _LoadAll()
         {
             lock (_lock)
@@ -59,24 +71,27 @@ namespace _cmd
 
                     for(int i = 0; i < _file.Length; i++)
                     {
-                        if(resource[i] == '\\')
+                        if(resource[i] == '\\') // we want to parse the file name and remove the backslashes.
                         {
                             end_index = i+1;
                         }
                     }
 
-                    string _new = _file.Remove(0, end_index);
-                    string _name = _new.Remove(_new.Length - 4); 
+                    string _new = _file.Remove(0, end_index); // remove all extra directory names etc.
+                    string _name = _new.Remove(_new.Length - 4); // remove .exe
 
-                    MakeCommand(_name, "__plugin__" + _name, () =>
+                    MakeCommand(_name, "__plugin__" + _name, () => // create plugin with their executable name.
                     {
+
+                        // this commands starts their process
+                        // as a child to our process.
 
                         System.Diagnostics.Process process = new System.Diagnostics.Process
                         {
                             StartInfo = new System.Diagnostics.ProcessStartInfo
                             {
                                 FileName = @"cmd.exe",
-                                Arguments = "echo [_cmd]: starting plugin...",
+                                Arguments = "echo [cmd]: starting plugin...",
                                 UseShellExecute = false,
                                 RedirectStandardOutput = true,
                                 CreateNoWindow = true,
@@ -91,27 +106,34 @@ namespace _cmd
                         }
                         catch
                         {
-                            return _cmdReturn._C_SYSTEM_ERROR;
+                            return RetType._C_SYSTEM_ERROR;
                         }
 
-                        return _cmdReturn._C_SUCCESS;
+                        return RetType._C_SUCCESS;
 
                     }, "This is an executable plugin, no description is provided.");
                 }
             }
 
-            Type ext_Interface = typeof(IPlugin);
+            Type ext_Interface = typeof(IPlugin); // get the raw Type.
 
             Type[] all_loaded_plugins = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
                 .Where(p => ext_Interface.IsAssignableFrom(p) && p.IsClass)
                 .ToArray();
 
+            // we then get all types that use our interface.
+
             foreach(Type plugin in all_loaded_plugins)
             {
-                IPlugin _plugin = (IPlugin)Activator.CreateInstance(plugin);
+                IPlugin _plugin = (IPlugin)Activator.CreateInstance(plugin); // create the instance.
                 _plugin._Go(); // call their initialization method.
                 _pluginLoaded(_plugin);
+
+                unsafe
+                {
+                    G.L.OG($"Plugin Info : name={_plugin.Name}, Desc={_plugin.Explaination}");
+                }
             }
 
             return true;

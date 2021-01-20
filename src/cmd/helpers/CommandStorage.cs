@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _cmd
+namespace cmd
 {
 
     // _typ = rname = readable name, typeable command.
@@ -18,10 +18,10 @@ namespace _cmd
 
         ~CommandStorage() { }
 
-        protected IDictionary<string, Command> StorageWorkload;
-        protected IDictionary<string, CommandWithArguements> cmdWArgs_Workload;
+        protected IDictionary<string, Command> StorageWorkload; // Main command work load. 
+        protected IDictionary<string, CommandWithArguements> cmdWArgs_Workload; // WIP, will hold all commands that have arguements.
 
-        protected bool CreateCommand(string _typ, string _name, Func<_cmdReturn> fmt, string _desc)
+        protected bool CreateCommand(string _typ, string _name, Func<RetType> fmt, string _desc)
         {
             if (StorageWorkload.ContainsKey(_typ))
             {
@@ -35,7 +35,7 @@ namespace _cmd
             return StorageWorkload.ContainsKey(_typ);
         }
 
-        protected _cmdReturn Run(string _typ)
+        protected RetType Run(string _typ)
         {
             return StorageWorkload[_typ].Function.Invoke();
         }
@@ -43,7 +43,10 @@ namespace _cmd
         protected bool FlushCommand(string _typ)
         {
             if (!StorageWorkload.ContainsKey(_typ))
+            {
+                Console.WriteLine("Command doesn't exist.");
                 return false;
+            }
 
             G.L.OG("Flushing " + _typ + " from loaded commands.");
 
@@ -58,7 +61,7 @@ namespace _cmd
             G.L.OG("Command has been requested, fetching data...");
 
             string __name = StorageWorkload[_typ].Name;
-            Func<_cmdReturn> __fmt = StorageWorkload[_typ].Function;
+            Func<RetType> __fmt = StorageWorkload[_typ].Function;
             string __desc = StorageWorkload[_typ].Description;
 
             G.L.OG("Command data found, supplying new object.");
