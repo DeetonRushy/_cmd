@@ -47,7 +47,6 @@
     <Compile Include="src\reference\Internal\Command.cs" />
     <Compile Include="src\reference\Internal\CommandWithArguements.cs" />
     <Compile Include="src\reference\Internal\Delegates\CreateDelegateHandler.cs" />
-    <Compile Include="src\reference\Internal\IPlugin.cs" />
     <Compile Include="src\reference\Internal\ErrorTranslation.cs" />
     <Compile Include="src\reference\ReturnTypes.cs" />
     <Compile Include="src\cmd\helpers\CommandExecutor.cs" />
