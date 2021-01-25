@@ -6,10 +6,5 @@ using System.Threading.Tasks;
 
 namespace cmd
 {
-    interface IPlugin
-    {
-        string Name { get; }
-        string Explaination { get; }
-        void _Go();
-    }
+
 }

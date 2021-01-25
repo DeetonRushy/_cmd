@@ -30,27 +30,47 @@ namespace cmd
             private set;
         }
 
-        // This is the main function that is executes in our main loop.
-        // We check if entered command exists & execute it.
-        // On failure to exist, we output the translated version of the return type.
-        // And give some extra information on the error.
+        // The execute function for commands that do not take
+        // any arguments.
 
         public RetType ExecuteCommand(string _rname) // rname = readable name, the name they type.
         {
             if (!Exists(_rname))
             {
-                G.L.OG("User ran command that doesn't exist.");
-                ErrorOutputHandler.Out(RetType._C_FAILURE, $"{_rname} doesn't exist as a command. Try typing 'help'.");
+                #region ExecuteCommandErrorOutput
+
+                G.Out(RetType._C_FAILURE, $"{_rname} doesn't exist as a command. Try typing 'help'.");
                 return RetType._C_FAILURE;
+
+                #endregion
             }
 
-            G.L.OG("Executing " + _rname);
+            if (G._case_sensitive)
+            {
+                return Run(_rname.ToLower());
+            }
+
             return Run(_rname);
+        }
+
+        // alternative, for commands with arguements.
+
+        public RetType ExecuteCommand(string _rname, params string[] arguements)
+        {
+            // we don't need to check if the command exists, the param execute function does it all
+            // for us.
+
+            if (G._case_sensitive)
+            {
+                return Run(_rname.ToLower(), arguements);
+            }
+
+            return Run(_rname, arguements);
         }
 
         // The main function to create a command.
 
-        // Nothing special happens in here, we just return an internal function
+        // Nothing special happens in here, we just return a protected function
         // from command storage.
 
         public bool MakeCommand(string _typ, string _name, Func<RetType> fmt, string _desc)
@@ -79,6 +99,21 @@ namespace cmd
                 }
             }
 
+            foreach(KeyValuePair<string, CommandWithArguements> _c in StorageWorkloadArgs)
+            {
+                try
+                {
+                    Console.WriteLine("Command -> " + _c.Key);
+                    Console.WriteLine("Name -> " + _c.Value.Name);
+                    Console.WriteLine("Description -> " + _c.Value.Description);
+                    Console.WriteLine();
+                }
+                catch
+                {
+                    result = RetType._C_ACCESSVIOLATION;
+                }
+            }
+
             return result;
         }
 
@@ -91,6 +126,30 @@ namespace cmd
                 try
                 {
                     #region _Listcmd_Simple_Output
+
+                    Console.Write("Command -> ");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write(_c.Key + "\n");
+                    Console.ResetColor();
+                    Console.Write("Desc    -> ");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write(_c.Value.Description + "\n");
+                    Console.ResetColor();
+                    Console.WriteLine();
+
+                    #endregion
+                }
+                catch
+                {
+                    result = RetType._C_ACCESSVIOLATION;
+                }
+            }
+
+            foreach (KeyValuePair<string, CommandWithArguements> _c in StorageWorkloadArgs)
+            {
+                try
+                {
+                    #region _Listcmd_Simple_Output_Args
 
                     Console.Write("Command -> ");
                     Console.ForegroundColor = ConsoleColor.Cyan;

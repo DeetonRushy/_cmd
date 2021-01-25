@@ -23,6 +23,7 @@ namespace cmd
             TranslationUnit.Add(RetType._C_UNKNOWN_ERROR, "There was an unknown error.");
             TranslationUnit.Add(RetType._C_DISABLED, "Command has been disabled by the command line.");
             TranslationUnit.Add(RetType._C_SYSTEM_ERROR, "There was an error performing a system command. (syscall)");
+            TranslationUnit.Add(RetType._C_RESOURCE_NOT_EXIST, "The command doesn't exist.");
 
             #endregion
 

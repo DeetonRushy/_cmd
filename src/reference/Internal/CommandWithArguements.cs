@@ -8,15 +8,22 @@ namespace cmd
 {
     class CommandWithArguements
     {
-        public CommandWithArguements(string _cname, Delegate _func, string _desc, params string[] _args)
+        public CommandWithArguements(string _cname, string inter_name, Func<string[], RetType> _func, string _desc, params string[] _args)
         {
-            Name        = _cname;
-            Function    = _func;
-            Description = _desc;
-            Parameters  = _args;
+            Name         = _cname;
+            InternalName = inter_name;
+            Function     = _func;
+            Description  = _desc;
+            Parameters   = _args;
         }
 
         public string Name
+        {
+            get;
+            private set;
+        }
+
+        public string InternalName
         {
             get;
             private set;
@@ -28,7 +35,7 @@ namespace cmd
             private set;
         }
 
-        public Delegate Function
+        public Func<string[], RetType> Function
         {
             get;
             private set;

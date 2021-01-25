@@ -33,17 +33,6 @@ namespace cmd
         {
             string[] _plgs = System.IO.Directory.GetFiles(_direc, "*.*", System.IO.SearchOption.AllDirectories);
 
-            G.L.OG("Amount of plugins found : " + _plgs.Length);
-
-            #region FileWork
-
-            foreach(string plugin in _plgs)
-            {
-                G.L.OG("Discovered plugin : " + plugin);
-            }
-
-            #endregion
-
             return _plgs;
         }
     }

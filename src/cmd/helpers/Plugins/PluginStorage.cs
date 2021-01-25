@@ -6,23 +6,20 @@ using System.Threading.Tasks;
 
 namespace cmd
 {
-    // Loaded plugin storage.
+    // This class is going to be re-worked once the plugin API & shared data is all finished.
 
     class PluginStorage : CommandExecutor
     {
-        protected List<IPlugin> _loaded { get; private set; }
 
         public PluginStorage()
         {
-            _loaded = new List<IPlugin>();
         }
 
         ~PluginStorage() { }
 
-        protected void _pluginLoaded(IPlugin _plugin)
+        protected void _pluginLoaded<T>(T _plugin)
         {
-            G.L.OG("New plugin module loaded. Name=" + _plugin.Name);
-            _loaded.Append(_plugin);
+
         }
     }
 }

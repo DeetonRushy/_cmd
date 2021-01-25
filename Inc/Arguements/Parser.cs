@@ -15,20 +15,11 @@ namespace cmd
     class Parser
     {
         private string[] _args { get; set; }
-
+        private bool exit_on_error = false;
         private IDictionary<string, ErrorInformation> ErrorInfo;
 
-        public Parser(string[] args)
+        public Parser(string[] args, bool exit = true)
         {
-            #region FileOG
-            G.L.OG("Parser begun, arguements below.");
-
-            for (int i = 0; i < args.Length; i++)
-            {
-                G.L.OG($"arg{i} : {args[i]}");
-            }
-            #endregion
-
             ErrorInfo = new Dictionary<string, ErrorInformation>();
             _args = args;
         }
@@ -37,8 +28,6 @@ namespace cmd
 
         public Parser add_optional(string arg, ref bool decl, bool toSetTo)
         {
-            G.L.OG("Parsing optional arguement : " + arg);
-
             if (_args.Length == 0)
                 return this;
 
@@ -56,8 +45,6 @@ namespace cmd
 
         private Parser Exit(int err)
         {
-            G.L.OG("Parser.Exit began, required arguement failed.");
-
             if (ErrorInfo.ContainsKey("true"))
             {
                 string text = ErrorInfo["true"]._message;
@@ -74,14 +61,16 @@ namespace cmd
                 System.Windows.Forms.MessageBox.Show(text, title);
             }
 
-            Environment.Exit(0);
-            return this; // never reached.
+            if (exit_on_error)
+            {
+                Environment.Exit(0);
+            }
+
+            return this; // never reached if exit on error is on.
         }
 
         public Parser set_error_on_required(string message, string title = "Error!")
         {
-            G.L.OG($"ArgsParser->OnError: message={message}, title={title}");
-
             if (ErrorInfo.Count != 0)
             {
                 ErrorInfo["true"] = new ErrorInformation() { _message = message, _title = title };
@@ -91,8 +80,6 @@ namespace cmd
             ErrorInfo.Add("true", new ErrorInformation() { _message = message, _title = title });
             return this;
         }
-
-        // Experimental, doesn't quite work as expected just yet.
 
         public Parser add_required_with_answer(string arg, ref string[] decl)
         {
@@ -110,11 +97,8 @@ namespace cmd
 
                 if(_work[i] == arg && _work[i+1] == "=") // arg1 is the keyword && arg2 is '='
                 {
-                    G.L.OG("Parsing data for command-line arguement : " + arg);
-
                     for(int q = i; _work[q] == ","; q++) // loop from the current index until _work[q] is a comma
                     {
-                        G.L.OG("Appending data : " + _work[q]);
                         decl.Append(_work[q]); // append the data to our result.
                     }
 
@@ -127,8 +111,6 @@ namespace cmd
 
         public Parser add_required(string arg, ref bool decl, bool toSetTo)
         {
-            G.L.OG("Parsing required arguement : " + arg);
-
             foreach (string _arg in _args)
             {
                 if(_arg == arg)

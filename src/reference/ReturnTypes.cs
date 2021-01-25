@@ -10,7 +10,8 @@ namespace cmd
         _C_ACCESSVIOLATION,
         _C_UNKNOWN_ERROR,
         _C_SYSTEM_ERROR,
-        _C_DISABLED
+        _C_DISABLED,
+        _C_RESOURCE_NOT_EXIST
     }
 
 }

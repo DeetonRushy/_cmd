@@ -2,7 +2,7 @@
 
 ## What is this? 
 
-These are things that aren't an exclusive part of cmd and can be used externally. The API & arguement parser are in here as they aren't essensial for the project. :heart:
+These are things that aren't an exclusive part of _cmd and can be used externally. The API & arguement parser are in here as they aren't essencial for the project. :heart:
 
 ## Arguements
 
@@ -10,7 +10,7 @@ This is just a simple command line arguement 'parser'. It doesn't really parse a
 
 ## Dictionary (un-finished)
 
-This WILL be an alternative to native mscorlib IDictionarys & Dictionarys. Why? Having our own dictionary allows us to add anything we like to it when needed.
+This WILL be an alternative to native mscorblib IDictionarys & Dictionarys. Why? Having our own dictionary allows us to add anything we like to it when needed.
 
 ## Logging
 

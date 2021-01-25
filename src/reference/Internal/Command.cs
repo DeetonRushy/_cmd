@@ -10,13 +10,6 @@ namespace cmd
     {
         public Command(string _name, Func<RetType> fmt, string _desc, params string[] _Arguements)
         {
-            G.L.OG("New command has been created!",
-                "#################################################",
-                _name,
-                fmt.Method.MethodHandle.Value.ToString(),
-                _desc,
-                "#################################################");
-
             Name = _name;
             Function = fmt;
             Description = _desc;
@@ -24,6 +17,32 @@ namespace cmd
         }
 
         ~Command() { }
+
+        public static bool operator ==(Command a, Command b) => a.Name == b.Name;
+
+        public static bool operator !=(Command a, Command b) => a.Name != b.Name;
+
+        public override bool Equals(object obj)
+        {
+            try
+            {
+                return (Command)obj == this; // cast may fail.
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
 
         public string Name
         {
