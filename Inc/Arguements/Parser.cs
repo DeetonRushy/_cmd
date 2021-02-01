@@ -89,6 +89,11 @@ namespace cmd
             // we search for a comma after the data to allow us to know where it stops.
 
             string[] _work = _args;
+            
+            // EXAMPLE: --info-arguement = name deeton fun, 
+            // We look for the flag '--info-arguement'
+            // We then grab the data {"name", "deeton", "fun"}
+            // Then we see the ',' and know it's the end of the data.
 
             for(int i = 0; i < _work.Length; i++)
             {
