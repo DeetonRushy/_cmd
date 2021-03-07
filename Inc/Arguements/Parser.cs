@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace cmd
 {
-    struct ErrorInformation
+    public struct ErrorInformation
     {
         public string _message;
         public string _title;
     }
 
-    class Parser
+    public class Parser
     {
         private string[] _args { get; set; }
         private bool exit_on_error = false;

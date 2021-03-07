@@ -2,7 +2,7 @@
 
 namespace cmd
 {
-    enum RetType
+    public enum RetType
     {
         _C_SUCCESS,
         _C_FAILURE,

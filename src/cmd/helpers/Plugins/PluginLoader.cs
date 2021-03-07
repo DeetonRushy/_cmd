@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace cmd
 {
@@ -16,11 +16,60 @@ namespace cmd
     // RECENT: This class will be re-worked once the plugin API & shared data is
     // properly implemented.
 
-    class PluginLoader : PluginStorage
+    class PluginLoader
     {
-        public PluginLoader() { }
-        ~PluginLoader() { }
+        public static void LoadAllPlugins(ref IDictionary<Assembly, ICmdPlugin> pluginHost, ref CommandExecutor context ) {
+            // firstly, we search for available plugins in the data/plugins directory.
 
-        public void _LoadAll() { }
+            if ( !Directory.Exists( "data\\plugins" ) ) {
+                G.L.OG( "Cannot load plugins, corrupted FS layout." );
+                return;
+            }
+
+            // We then search for every file in the directory that contains *.dll
+            // It doesn't matter if they have their own folders.
+
+            foreach(string pluginpath in Directory.GetFiles( "data\\plugins", "*.dll", SearchOption.AllDirectories ) ) {
+
+                Assembly ass = null;
+
+                try {
+                    ass = Assembly.Load( pluginpath );
+                }
+                catch {
+                    G.L.OG( $"Failed to load plugin {pluginpath}. An exception was thrown when try to execute the binary." );
+                    continue;
+                }
+
+                Type info = null;
+
+                try {
+                    Type[] types = ass.GetTypes();
+                    Assembly core = AppDomain.CurrentDomain.GetAssemblies().Single( x => x.GetName().Name.Equals( "cmd" ) );
+                    Type type = core.GetType( "cmd.ICmdPlugin" );
+
+                    foreach(var _t in types ) {
+                        if(type.IsAssignableFrom((Type) _t ) ) {
+                            info = _t;
+                            break;
+                        }
+                    }
+
+                    if( info != null ) {
+                        object o = Activator.CreateInstance( info );
+                        ICmdPlugin plugin = ( ICmdPlugin ) o;
+
+                        plugin.OnPluginLoad( context );
+                        pluginHost.Add( core, plugin );
+
+                        G.L.OG( $"Loaded plugin -- ({plugin.PluginName}) made by {plugin.AuthorName}" );
+                    }
+                }
+                catch {
+                    G.L.OG( $"Failed to load plugin -- {pluginpath}, there was an exception during assembly load." );
+                }
+
+            }
+        }
     }
 }

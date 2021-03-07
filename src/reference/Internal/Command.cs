@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace cmd
 {
-    class Command
+    public class Command
     {
         public Command(string _name, Func<RetType> fmt, string _desc, params string[] _Arguements)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace cmd
 {
-    sealed class Start : CommandExecutor
+    public sealed class Start
     {
         // if --disable-flush is passed as a parameter, this is true.
         // this then causes flush to cancel on execution.
@@ -36,9 +36,9 @@ namespace cmd
         {
             #region HELP
 
-            MakeCommand("%help", "__inter_help", () =>
+            G.context.MakeCommand("%help", "__inter_help", () =>
             {
-                return ExecuteCommand("help", "/?");
+                return G.context.ExecuteCommand("help", "/?");
 
             }, "The basic help command built into cmd.");
 
@@ -46,13 +46,12 @@ namespace cmd
 
             #region HELP_ARGS
 
-            CreateCommand("help", "__inter_help_main", (args) =>
+            G.context.CreateCommand("help", "__inter_help_main", (args) =>
             {
 
                 string _help()
                 {
-                    return "\nHelp command\n\nhelp /basic - outputs information about _cmd\n" +
-                    "help /cdirec - outputs information about the cdirec command.\n";
+                    return "LISTING ARGUMENTS\n\n- /?\n- /list\n- /basic\n- /cdirec\n";
                 }
 
                 if(args[0] == "/?")
@@ -122,32 +121,26 @@ namespace cmd
 
             #region SIMPLE_HELP
 
-            MakeCommand("help", "__inter__help", () => { return Run("%help"); }, "The basic help command.");
+            G.context.MakeCommand("help", "__inter__help", () => { return G.context.ExecuteCommand("%help"); }, "The basic help command.");
 
             #endregion
 
             #region LIST_CMD
 
-            MakeCommand("%listcmd", "__inter_simple_list", () =>
+            G.context.MakeCommand("%listcmd", "__inter_simple_list", () =>
             {
 
-                return _Listcmd_Simple();
+                return G.context._Listcmd_Simple();
 
             }, "The list command for users that don't want to know internal names etc.");
 
             #endregion
 
-            #region ADVANCED_LIST
-
-            MakeCommand("##list", "__inter_list", _Listcmd, "Internal list command, lists all commands.");
-
-            #endregion
-
             #region CLEAR_SINGLE
 
-            MakeCommand("echo", "__inter_echo_safe", () =>
+            G.context.MakeCommand("echo", "__inter_echo_safe", () =>
             {
-                return ExecuteCommand("echo", "This", "command", "takes", "your", "text!");
+                return G.context.ExecuteCommand("echo", "This", "command", "takes", "your", "text!");
 
             }, "This command is there to help someone who doesn't know how to use echo.");
 
@@ -155,17 +148,18 @@ namespace cmd
 
             #region CLEAR
 
-            MakeCommand("%clear", "__inter_clear", () =>
+            G.context.MakeCommand("%clear", "__inter_clear", () =>
             {
                 Console.Clear();
                 return RetType._C_SUCCESS;
+
             }, "Clear the console.");
 
             #endregion
 
             #region ECHO
 
-            CreateCommand("echo", "__inter_echo", (args) =>
+            G.context.CreateCommand("echo", "__inter_echo", (args) =>
             {
 
                 Console.WriteLine();
@@ -185,7 +179,7 @@ namespace cmd
 
             #region TIME
 
-            CreateCommand("time", "__inter_time", () =>
+            G.context.MakeCommand("time", "__inter_time", () =>
             {
 
                 var current = DateTime.Now;
@@ -200,7 +194,7 @@ namespace cmd
 
             #region RESET
 
-            CreateCommand("_reset", "__inter_reset", () =>
+            G.context.MakeCommand("_reset", "__inter_reset", () =>
             {
                 G.Panic();
                 return RetType._C_SUCCESS;
@@ -211,7 +205,7 @@ namespace cmd
 
             #region NAME
 
-            MakeCommand("%name", "__inter_name", () =>
+            G.context.MakeCommand("%name", "__inter_name", () =>
             {
                 Console.WriteLine();
                 Console.WriteLine(Environment.UserName);
@@ -223,7 +217,7 @@ namespace cmd
 
             #region VERSION
 
-            MakeCommand("%version", "__inter__ver__", () =>
+            G.context.MakeCommand("%version", "__inter__ver__", () =>
             {
                 string _ver = null;
 
@@ -248,7 +242,7 @@ namespace cmd
 
 #if DEBUG
 
-            MakeCommand("%broken", "__DEBUG_BROKEN", () =>
+            G.context.MakeCommand("%broken", "__DEBUG_BROKEN", () =>
             {
                 Console.WriteLine(this);
                 return RetType._C_ACCESSVIOLATION;
@@ -261,7 +255,7 @@ namespace cmd
 
             #region CURRENT_DIRECTORY
 
-            MakeCommand("%cdirec", "__inter_platform", () =>
+            G.context.MakeCommand("%cdirec", "__inter_platform", () =>
             {
 
                 string _direc = System.IO.Directory.GetCurrentDirectory();
@@ -272,63 +266,10 @@ namespace cmd
 
             #endregion
 
-            #region FLUSH
-
-            MakeCommand("%flush", "__inter_danger_flush", () =>
-            {
-
-                lock (_lock)
-                {
-                    if (__flush_disabled__)
-                    {
-                        G.Out(RetType._C_DISABLED, "--disable-flush was passed.");
-                        return RetType._C_DISABLED;
-                    }
-                }
-
-                Console.WriteLine("Executing this command will flush every command from this instance of cmd.");
-                Console.Write("Are you sure? (Y/N): ");
-                string result = Console.ReadLine().ToLower();
-
-                if (result.Contains("yes"))
-                {
-                    string[] results = new string[StorageWorkload.Count];
-                    int index = 0;
-
-                    foreach (KeyValuePair<string, Command> kv in StorageWorkload)
-                    {
-                        results[index] = kv.Key;
-                        index++;
-                    }
-
-                    foreach(string cmd in results)
-                    {
-                        if (G.IsNull(cmd))
-                            continue;
-
-                        if (FlushCommand(cmd))
-                        {
-                            continue;
-                        }
-                    }
-                }
-                else
-                {
-                    return RetType._C_SUCCESS;
-                }
-
-                LoadStartInternalPlugins(); // get baseline commands back, all plugins will be gone.
-
-                return RetType._C_SUCCESS;
-
-            }, "Flushes every active command from memory & active workload.");
-
-            #endregion
-
             #region DEBUG_BROKEN_DUPLICATE
 
 #if DEBUG
-            MakeCommand("%flush", "__broken", () => { return RetType._C_FAILURE; }, "Broken");
+            G.context.MakeCommand("%flush", "__broken", () => { return RetType._C_FAILURE; }, "Broken");
 #endif
 
             #endregion
@@ -337,7 +278,7 @@ namespace cmd
 
 #if DEBUG
 
-            CreateCommand("debug", "__inter_debug_params", (param) =>
+            G.context.CreateCommand("debug", "__inter_debug_params", (param) =>
             {
                 Console.WriteLine();
 
@@ -356,7 +297,7 @@ namespace cmd
 
             #region CD
 
-            CreateCommand("cd", "__inter_cd", (d_info) =>
+            G.context.CreateCommand("cd", "__inter_cd", (d_info) =>
             {
 
                 if(!System.IO.Directory.Exists(d_info[0]))
@@ -376,7 +317,7 @@ namespace cmd
 
             #region COLOR
 
-            CreateCommand("color", "__inter_color", (c) =>
+            G.context.CreateCommand("color", "__inter_color", (c) =>
             {
                 if (c[0] == "help")
                 {
@@ -436,7 +377,7 @@ namespace cmd
 
             #region DIR
 
-            CreateCommand("dir", "__inter_touch", (args) =>
+            G.context.CreateCommand("dir", "__inter_touch", (args) =>
             {
                 string _work = args[0]; // ignore the rest
                 string work = null;
@@ -486,12 +427,27 @@ namespace cmd
 
             #region TOUCH
 
-            CreateCommand("touch", "__inter_touch", (arg) =>
+            G.context.CreateCommand("touch", "__inter_touch", (arg) =>
             {
                 G.Out(RetType._C_RESOURCE_NOT_EXIST, "This command will be implemented once the global directory object works.");
                 return RetType._C_SUCCESS;
 
             }, "Stamps a fresh timestamp on an existing file or creates a file.", null);
+
+            #endregion
+
+            #region CVarList
+
+            G.context.MakeCommand( "lscvar", "__inter_cvar_ls", ( ) => {
+                Console.WriteLine();
+
+                foreach ( KeyValuePair<string, CVarContainer> kvp in G.host.Host ) {
+                    Console.WriteLine( $"\"{kvp.Value.Name}: \"{kvp.Value.Value}\". \n\"{kvp.Value.Description}\"\n" );
+                }
+
+                return RetType._C_SUCCESS;
+
+            }, "Lists all CVars with their name, value and description." );
 
             #endregion
         }
@@ -512,15 +468,14 @@ namespace cmd
         {
             LoadStartInternalPlugins();
             WriteCmdStartText(50);
+            G.RCVars();
 
-        // We load the plugins once we have created the start object.
-        // Once loaded, they will be able to access our plugin API
-        // ( which is not yet created. ) 
-        // All files and commands can they be developed externally.
-            
+            // We load the plugins once we have created the start object.
+            // Once loaded, they will be able to access our plugin API
+            // ( which is not yet created. ) 
+            // All files and commands can then be developed externally.
 
-            PluginLoader p_load = new PluginLoader();
-            p_load._LoadAll();
+            PluginLoader.LoadAllPlugins( ref G.context.PluginWorkload, ref G.context );
 
             while (true)
             {
@@ -557,11 +512,26 @@ namespace cmd
                 Console.WriteLine();
 
             SkipParse:
-                
+
 
                 #endregion
 
-                RetType result = exec_w_params ? ExecuteCommand(command, _work) : ExecuteCommand(command);
+                #region CVarCheck
+
+                if ( G.host.Exists( command ) ) {
+                    if ( exec_w_params ) {
+                        G.host.OnTypedCommand( command, _work );
+                    }
+                    else {
+                        G.host.OnTypedCommand( command, null );
+                    }
+
+                    continue;
+                }
+
+                #endregion
+
+                RetType result = exec_w_params ? G.context.ExecuteCommand(command, _work) : G.context.ExecuteCommand(command);
                 ErrorTranslator _Ts = new ErrorTranslator(result);
 
                 #region Title&Seperator

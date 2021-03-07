@@ -46,7 +46,6 @@ namespace cmd_NonGit
                     {
                         _keys[i] = default;
                         ShiftArrayDown(ref _keys);
-                        Array.Resize(ref _keys, (_keys.Length - 1));
                     }
                 }
             }

@@ -11,27 +11,36 @@ namespace cmd
     {
         static void Main(string[] args)
         {
+            G.StorageWorker.Save( "data\\temp\\saved\\s1.json" );
             Parser arg_worker = new Parser(args);
-            string[] wait = { };
+            bool IsFirstTime = false;
 
             arg_worker
-                .add_optional("--disable-flush", ref Start.__flush_disabled__, true)
-                .add_optional("--disable-arguements", ref Start.__arguement_cmds_disabled__, true) // __ is reserved for compiler generated symbols but eh
-                .add_required_with_answer("--init-and-wait", ref wait)
-                .add_optional("--disable-case-sens", ref G._case_sensitive, false);
+                .add_optional( "--disable-flush", ref Start.__flush_disabled__, true )
+                .add_optional( "--disable-arguements", ref Start.__arguement_cmds_disabled__, true ) // __ is reserved for compiler generated symbols but eh
+                .add_optional( "--disable-case-sens", ref G._case_sensitive, false )
+                .add_optional( "--first-time-init", ref IsFirstTime, true );
 
-            #region waiting_to_init
 
-            // wait to initialize
-
-            if(wait.Length != 0)
-            {
-                int.TryParse(wait[0], out int a);
-
-                System.Threading.Thread.Sleep((a*1000)); // convert seconds to ms, nothing if 0.
+            try {
+                G.StorageWorker.Load( "data\\temp\\saved\\s1.json" );
+            }
+            catch {
+                G.L.OG( "Save file not present, attempting to continue." );
             }
 
-        #endregion
+            // we check if it's our first time, if it is we want to create all directorys we may use.
+            // the launcher will decide if it's a first time init.
+
+            if ( IsFirstTime ) {
+                System.IO.Directory.CreateDirectory( "data" ); // The main directory for all used data.
+                System.IO.Directory.CreateDirectory( "data\\plugins" ); // The plugin directory.
+                System.IO.Directory.CreateDirectory( "data\\temp" ); // used for temporary storage.
+
+                // we write all constants to temp file.
+
+                G.StorageWorker.Write( "__version__", "v1.2.4" );
+            }
 
         Reset:
 
@@ -48,6 +57,8 @@ namespace cmd
 
             #endregion
 
+
+            G.StorageWorker.Save( "data\\temp\\saved\\s1.json" );
             goto Reset;
         }
     }

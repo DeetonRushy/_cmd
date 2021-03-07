@@ -43,7 +43,8 @@
     <Compile Include="Inc\Dictionary\Dictionary.cs" />
     <Compile Include="Inc\Global.cs" />
     <Compile Include="Inc\Logging\Logging.cs" />
-    <Compile Include="src\reference\HelperFactory.cs" />
+    <Compile Include="src\cmd\helpers\cvar\ConsoleVariableWorker.cs" />
+    <Compile Include="src\cmd\helpers\Plugins\ICmdPlugin.cs" />
     <Compile Include="src\reference\Internal\Command.cs" />
     <Compile Include="src\reference\Internal\CommandWithArguements.cs" />
     <Compile Include="src\reference\Internal\Delegates\CreateDelegateHandler.cs" />
@@ -52,15 +53,16 @@
     <Compile Include="src\cmd\helpers\CommandExecutor.cs" />
     <Compile Include="src\cmd\helpers\CommandStorage.cs" />
     <Compile Include="src\cmd\helpers\Plugins\PluginLoader.cs" />
-    <Compile Include="src\cmd\helpers\Plugins\PluginRetreiver.cs" />
-    <Compile Include="src\cmd\helpers\Plugins\PluginStorage.cs" />
     <Compile Include="src\cmd\Start.cs" />
     <Compile Include="src\entry.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\..\Downloads\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SStorage">
+      <HintPath>..\..\..\Downloads\SStorage.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Diagnostics.Process, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

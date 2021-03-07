@@ -1,32 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace cmd
 {
 
     // _typ = rname = readable name, typeable command.
-    class CommandStorage
+    public class CommandStorage
     {
         public CommandStorage()
         {
             StorageWorkload   = new Dictionary<string, Command>();
             StorageWorkloadArgs = new Dictionary<string, CommandWithArguements>();
+            PluginWorkload = new Dictionary<Assembly, ICmdPlugin>();
         }
 
         ~CommandStorage() { }
 
         // The workload for commands without arguements.
 
-        protected IDictionary<string, Command> StorageWorkload; // Main command work load. 
+        public IDictionary<string, Command> StorageWorkload; // Main command work load. 
 
         // The workload for commands that take arguements.
 
-        protected IDictionary<string, CommandWithArguements> StorageWorkloadArgs; // WIP, will hold all commands that have arguements.
+        public IDictionary<string, CommandWithArguements> StorageWorkloadArgs; // WIP, will hold all commands that have arguements.
 
-        protected bool CreateCommand(string _typ, string _name, Func<RetType> fmt, string _desc)
+
+        public IDictionary<Assembly, ICmdPlugin> PluginWorkload;
+        public bool CreateCommand(string _typ, string _name, Func<RetType> fmt, string _desc)
         {
             if (StorageWorkload.ContainsKey(_typ))
             {
@@ -39,37 +40,7 @@ namespace cmd
             return StorageWorkload.ContainsKey(_typ);
         }
 
-        /// <summary>
-        /// Create a command that accepts string arguements.
-        /// </summary>
-        /// <param name="_typ">The command name, what to type into the console. (visable)</param>
-        /// <param name="inter_name">The internal name that _cmd will recognise the command by. (not visable)</param>
-        /// <param name="fmt">The delegate that executes your command/code.</param>
-        /// <param name="_desc">Description of your command, this will be displayed on the help command.</param>
-        /// <param name="expected">The expected arguements, this can be null if you expect no specific arguements.</param>
-        /// <returns></returns>
-        protected bool CreateCommand(string _typ, string inter_name, Func<string[], RetType> fmt, string _desc, params string[] expected)
-        {
-            if (StorageWorkloadArgs.ContainsKey(_typ))
-            {
-                Console.WriteLine($"Tried to create command with arguements that already exists. Name={inter_name}");
-                return true; // return true because the command does exist.
-            }
-
-            CommandWithArguements result = new CommandWithArguements(
-                _typ, // type-able name.
-                inter_name, // internal name
-                fmt, // delegate
-                _desc, // description
-                expected // expected params, **can** be empty.
-                );
-
-            StorageWorkloadArgs.Add(_typ, result);
-
-            return StorageWorkloadArgs.ContainsKey(_typ);
-        }
-
-        protected RetType Run(string _typ)
+        public RetType Run(string _typ)
         {
             if (G._case_sensitive)
             {
@@ -85,7 +56,7 @@ namespace cmd
             return StorageWorkload[_typ].Function.Invoke();
         }
 
-        protected RetType Run(string _typ, string[] _params)
+        public RetType Run(string _typ, string[] _params)
         {
             if (!ExistsW(_typ))
             {
@@ -121,7 +92,7 @@ namespace cmd
             return result;
         }
 
-        protected bool FlushCommand(string _typ)
+        public bool FlushCommand(string _typ)
         {
             if (!StorageWorkload.ContainsKey(_typ))
             {
@@ -132,7 +103,7 @@ namespace cmd
             return StorageWorkload.Remove(_typ);
         }
 
-        protected Command RetreiveCommand(string _typ)
+        public Command RetreiveCommand(string _typ)
         {
             if (!StorageWorkload.ContainsKey(_typ))
                 return null;
@@ -144,7 +115,7 @@ namespace cmd
             return new Command(__name, __fmt, __desc);
         }
 
-        protected bool Exists(string _typ)
+        public bool Exists(string _typ)
         {
             if (G._case_sensitive)
             {
@@ -154,7 +125,7 @@ namespace cmd
             return StorageWorkload.ContainsKey(_typ);
         }
 
-        protected bool ExistsW(string _typ)
+        public bool ExistsW(string _typ)
         {
             if (G._case_sensitive)
             {

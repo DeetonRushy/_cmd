@@ -1,12 +1,80 @@
 ﻿using System;
+using Storage.Utils;
 
 namespace cmd
 {
-    class G
+    public class G
     {
         #region LoggerInstance
 
-        // public static GOG L = new GOG("data\\logs");
+        public static GOG L = new GOG("data\\logs");
+
+        #endregion
+
+        #region str_arr_to_str
+
+        public static string StringArrayToString( string[] arr ) {
+            string res = "";
+
+            foreach ( string _val in arr ) {
+                res += _val + " ";
+            }
+
+            return res;
+        }
+
+        #endregion
+
+        #region CVARHOST
+
+        public static CVarHost host = new CVarHost();
+
+        public static void RCVars( ) {
+            host.CreateCVar( "--buffer-size-w", (_arg) => {
+
+                if( !int.TryParse( _arg[0], out int arg ) ) {
+                    return RetType._C_FAILURE;
+                }
+
+                if ( arg < Console.BufferWidth || arg >= short.MaxValue ) {
+                    return RetType._C_FAILURE;
+                }
+
+                Console.BufferWidth = ( short ) arg;
+                return RetType._C_SUCCESS;
+
+            }, Console.BufferWidth.ToString(), "The buffer-width size." );
+
+            host.CreateCVar( "--title", ( _arg ) => {
+
+                Console.Title = StringArrayToString(_arg);
+                return RetType._C_SUCCESS;
+
+            }, Console.Title, "The console title." );
+
+            host.CreateCVar( "--ptr-txt", ( _arg ) => {
+                string _new = StringArrayToString( _arg );
+
+                if ( !(_new.Length <= 25) ) {
+                    return RetType._C_FAILURE;
+                }
+
+                line_pointer = _new;
+                return RetType._C_SUCCESS;
+            }, line_pointer, "The prompt text.");
+        }
+
+        #endregion
+
+        #region TemporaryStorageWriter
+
+        public static readonly IStorage StorageWorker = HelperFactory.SStorageWithPath( "data\\temp\\_a.tmp" );
+
+        #endregion
+
+        #region ExecutionContext
+
+        public static CommandExecutor context = new CommandExecutor();
 
         #endregion
 

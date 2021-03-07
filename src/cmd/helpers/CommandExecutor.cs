@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 
 namespace cmd
 {
-    class CommandExecutor : CommandStorage, IDisposable
+    public class CommandExecutor : CommandStorage, IDisposable
     {
         public CommandExecutor()
         {
-            Instance = this;
+
         }
 
         ~CommandExecutor() { }
@@ -22,12 +22,6 @@ namespace cmd
             {
                 _handle?.Dispose();
             }
-        }
-
-        protected static CommandExecutor Instance
-        {
-            get;
-            private set;
         }
 
         // The execute function for commands that do not take
@@ -76,6 +70,34 @@ namespace cmd
         public bool MakeCommand(string _typ, string _name, Func<RetType> fmt, string _desc)
         {
             return CreateCommand(_typ, _name, fmt, _desc);
+        }
+
+        /// <summary>
+        /// Create a command that accepts string arguements.
+        /// </summary>
+        /// <param name="_typ">The command name, what to type into the console. (visable)</param>
+        /// <param name="inter_name">The internal name that _cmd will recognise the command by. (not visable)</param>
+        /// <param name="fmt">The delegate that executes your command/code.</param>
+        /// <param name="_desc">Description of your command, this will be displayed on the help command.</param>
+        /// <param name="expected">The expected arguements, this can be null if you expect no specific arguements.</param>
+        /// <returns></returns>
+        public bool CreateCommand( string _typ, string inter_name, Func<string[], RetType> fmt, string _desc, params string[] expected ) {
+            if ( StorageWorkloadArgs.ContainsKey( _typ ) ) {
+                Console.WriteLine( $"Tried to create command with arguements that already exists. Name={inter_name}" );
+                return true; // return true because the command does exist.
+            }
+
+            CommandWithArguements result = new CommandWithArguements(
+                _typ, // type-able name.
+                inter_name, // internal name
+                fmt, // delegate
+                _desc, // description
+                expected // expected params, **can** be empty.
+                );
+
+            StorageWorkloadArgs.Add( _typ, result );
+
+            return StorageWorkloadArgs.ContainsKey( _typ );
         }
 
         #region command_definitions

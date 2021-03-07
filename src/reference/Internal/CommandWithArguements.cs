@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace cmd
 {
-    class CommandWithArguements
+    public class CommandWithArguements
     {
         public CommandWithArguements(string _cname, string inter_name, Func<string[], RetType> _func, string _desc, params string[] _args)
         {

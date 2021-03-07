@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace cmd
 {
-    class GOG
+    public class GOG
     {
 
         string root = string.Empty; // root file path. I.E The folder when the logs will be created.
@@ -142,7 +142,7 @@ namespace cmd
             {
                 foreach (string log in Information) // iterate params
                 {
-                    work.Append(log);
+                    File.WriteAllText( this.session, log + "\n" );
                 }
             }
             else
