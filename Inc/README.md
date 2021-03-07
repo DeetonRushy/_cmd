@@ -21,5 +21,3 @@ This is extremely messy, I made this a long while ago and plan to sort it out.
 ## PluginAPI
 
 The API for creating plugins for **_cmd**_. This is still under development and is unstable.
-
-There is now support for native executable plugins, they are registered as internal commands when placed in plugins/exec.
