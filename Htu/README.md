@@ -20,6 +20,7 @@ Cmd's Cvar system is basically a way for the end user to edit variables. You can
 ### How to use them
 
 To view the value of a cvar, simply type the name of it.
+
 ![](https://cdn.discordapp.com/attachments/715986045279141949/818141708097028116/unknown.png)
 
 To attempt to modify the value of a cvar, type the name of it and then the value.
