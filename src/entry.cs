@@ -11,7 +11,6 @@ namespace cmd
     {
         static void Main(string[] args)
         {
-            G.StorageWorker.Save( "data\\temp\\saved\\s1.json" );
             Parser arg_worker = new Parser(args);
             bool IsFirstTime = false;
 
@@ -21,26 +20,6 @@ namespace cmd
                 .add_optional( "--disable-case-sens", ref G._case_sensitive, false )
                 .add_optional( "--first-time-init", ref IsFirstTime, true );
 
-
-            try {
-                G.StorageWorker.Load( "data\\temp\\saved\\s1.json" );
-            }
-            catch {
-                G.L.OG( "Save file not present, attempting to continue." );
-            }
-
-            // we check if it's our first time, if it is we want to create all directorys we may use.
-            // the launcher will decide if it's a first time init.
-
-            if ( IsFirstTime ) {
-                System.IO.Directory.CreateDirectory( "data" ); // The main directory for all used data.
-                System.IO.Directory.CreateDirectory( "data\\plugins" ); // The plugin directory.
-                System.IO.Directory.CreateDirectory( "data\\temp" ); // used for temporary storage.
-
-                // we write all constants to temp file.
-
-                G.StorageWorker.Write( "__version__", "v1.2.4" );
-            }
 
         Reset:
 
@@ -57,8 +36,6 @@ namespace cmd
 
             #endregion
 
-
-            G.StorageWorker.Save( "data\\temp\\saved\\s1.json" );
             goto Reset;
         }
     }

@@ -66,12 +66,6 @@ namespace cmd
 
         #endregion
 
-        #region TemporaryStorageWriter
-
-        public static readonly IStorage StorageWorker = HelperFactory.SStorageWithPath( "data\\temp\\_a.tmp" );
-
-        #endregion
-
         #region ExecutionContext
 
         public static CommandExecutor context = new CommandExecutor();
