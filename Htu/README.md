@@ -7,6 +7,7 @@ This project isn't all that confusing but there are certain things that may be h
 Commands are registered as either a Command object or CommandWithArguments object. If a command that doesn't take arguments in ran with arguments, we automatically assume you're trying to run a command that takes arguments, so you'll receive an error. For example, 'time' is a command that takes no arguments. I'll run it now and see what we get.
 
 ![](https://cdn.discordapp.com/attachments/715986045279141949/818139628774096966/unknown.png)
+
 It outputs the time, as we expect. Lets try the same thing but pass arguments to it.
 
 ![](https://cdn.discordapp.com/attachments/715986045279141949/818140284398993418/unknown.png)
