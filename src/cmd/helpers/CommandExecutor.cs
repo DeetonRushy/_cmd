@@ -142,6 +142,7 @@ namespace cmd
         public RetType _Listcmd_Simple()
         {
             RetType result = RetType._C_SUCCESS;
+            ConsoleColor _col = Console.ForegroundColor;
 
             foreach (KeyValuePair<string, Command> _c in StorageWorkload)
             {
@@ -191,6 +192,7 @@ namespace cmd
                 }
             }
 
+            Console.ForegroundColor = _col;
             return result;
         }
 

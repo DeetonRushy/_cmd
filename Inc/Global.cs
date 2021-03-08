@@ -1,5 +1,5 @@
 ﻿using System;
-using Storage.Utils;
+using System.Linq;
 
 namespace cmd
 {
@@ -25,12 +25,23 @@ namespace cmd
 
         #endregion
 
+        #region RandomString
+
+        private static Random random = new Random();
+        public static string RandomString( int length ) {
+            const string chars = "abcdefghijlmnopqrstuvwxyz";
+            return new string( Enumerable.Repeat( chars, length )
+              .Select( s => s[random.Next( s.Length )] ).ToArray() );
+        }
+
+        #endregion
+
         #region CVARHOST
 
         public static CVarHost host = new CVarHost();
 
         public static void RCVars( ) {
-            host.CreateCVar( "--buffer-size-w", (_arg) => {
+            host.CreateCVar( "console.bufferwidth", (_arg) => {
 
                 if( !int.TryParse( _arg[0], out int arg ) ) {
                     return RetType._C_FAILURE;
@@ -45,14 +56,14 @@ namespace cmd
 
             }, Console.BufferWidth.ToString(), "The buffer-width size." );
 
-            host.CreateCVar( "--title", ( _arg ) => {
+            host.CreateCVar( "console.title", ( _arg ) => {
 
                 Console.Title = StringArrayToString(_arg);
                 return RetType._C_SUCCESS;
 
             }, Console.Title, "The console title." );
 
-            host.CreateCVar( "--ptr-txt", ( _arg ) => {
+            host.CreateCVar( "cmd.pointer", ( _arg ) => {
                 string _new = StringArrayToString( _arg );
 
                 if ( !(_new.Length <= 25) ) {
@@ -62,6 +73,69 @@ namespace cmd
                 line_pointer = _new;
                 return RetType._C_SUCCESS;
             }, line_pointer, "The prompt text.");
+
+            host.CreateCVar( "console.foregroundcolor", ( args ) => {
+
+            ConsoleColor GetColor( string str ) {
+                switch ( str ) {
+                case "red":
+                    return ConsoleColor.Red;
+                case "green":
+                    return ConsoleColor.Green;
+                case "blue":
+                    return ConsoleColor.Blue;
+                case "cyan":
+                    return ConsoleColor.Cyan;
+                case "yellow":
+                    return ConsoleColor.Yellow;
+                case "purple":
+                    return ConsoleColor.Magenta;
+                case "-reset":
+                    return ConsoleColor.White;
+                default:
+                    return ConsoleColor.White;
+                }
+            }
+
+                if ( GetColor( args[0] ) == ConsoleColor.White ) {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    host.ModifyCVarForce( "Console.ForegroundColor", "default-white" );
+                    return RetType._C_DUMMY_VL;
+                }
+
+                Console.ForegroundColor = GetColor( args[0] );
+
+                return RetType._C_SUCCESS;
+
+            }, "white", "The console foreground color." );
+
+            host.CreateCVar( "console.cursorsize", ( args ) => {
+                if ( !int.TryParse( args[0], out int _res ) ) {
+                    return RetType._C_ACCESSVIOLATION;
+                }
+
+                try {
+                    Console.CursorSize = _res;
+                }
+                catch {
+                    return RetType._C_DISABLED;
+                }
+
+                return RetType._C_SUCCESS;
+            }, Console.CursorSize.ToString(), "The console cursor size." );
+
+            host.CreateCVar( "console.cursorvisible", ( args ) => {
+
+                if ( args[0].ToLower() == "true" ) {
+                    Console.CursorVisible = true;
+                    return RetType._C_SUCCESS;
+                }
+                else {
+                    Console.CursorVisible = false;
+                    host.ModifyCVarForce( "Console.CursorVisible", "false" );
+                    return RetType._C_DUMMY_VL;
+                }
+            }, Console.CursorVisible.ToString(), "The boolean determining the visability of the cursor." );
         }
 
         #endregion
@@ -101,7 +175,7 @@ namespace cmd
 
         #region Version
 
-        public static string __version__ = "v1.0.1";
+        public static string __version__ = "1.0.4";
 
         #endregion
 
@@ -159,6 +233,11 @@ namespace cmd
 
         public static void Out(RetType status, string additional = "")
         {
+
+            if ( status == RetType._C_DUMMY_VL ) {
+                return;
+            }
+
             ErrorTranslator unit = new ErrorTranslator(status);
 
             string err = unit.Error;

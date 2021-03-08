@@ -31,6 +31,14 @@ namespace cmd {
             Host = new Dictionary<string, CVarContainer>();
         }
 
+        public void ModifyCVarForce( string name, string value ) {
+            if ( !Exists( name ) ) {
+                return;
+            }
+
+            Host[name].Value = value;
+        }
+
         public bool OnTypedCommand( string name, string[] p ) {
 
             if ( !Host.ContainsKey ( name ) ) {
@@ -63,6 +71,10 @@ namespace cmd {
             Host.Add( name, _a );
 
             G.L.OG( $"New CVar registered, (name={name}, desc={description})" );
+        }
+
+        public void _Reset( ) {
+            Host.Clear();
         }
 
         public bool Exists(string Name ) {

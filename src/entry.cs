@@ -32,6 +32,7 @@ namespace cmd
             #region PANIC_HANDLE
 
             G._main = new Start(); // reset it entirely.
+            G.host._Reset();
             G.restart_needed = false;
 
             #endregion

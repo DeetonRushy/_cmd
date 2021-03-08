@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using LibGit2Sharp;
+using System.Net;
 
 namespace cmd
 {
@@ -17,17 +19,6 @@ namespace cmd
 
 
         public object _lock;
-
-        public static void MakeCommandStatic(string a, string b, Func<RetType> c, string d)
-        {
-            // the plan is to access the protected member from the child/base of this class.
-            // we need to somehow call the function from the instance that we are parenting.
-            // we cannot do this any other way because the child instance holds all command
-            // data & information about loaded plugins etc.
-
-            // TLDR: We need to access the non-static function from the child base class &
-            // call it in here.
-        }
 
         public Start() { _lock = new object(); }
         ~Start() { }
@@ -106,7 +97,7 @@ namespace cmd
                 {
                     #region list_information
 
-                    Console.WriteLine("Type '%listcmd' to view all active commands.");
+                    Console.WriteLine("Type 'lscmd' to view all active commands.");
                     return RetType._C_SUCCESS;
 
                     #endregion
@@ -127,7 +118,7 @@ namespace cmd
 
             #region LIST_CMD
 
-            G.context.MakeCommand("%listcmd", "__inter_simple_list", () =>
+            G.context.MakeCommand("lscmd", "__inter_simple_list", () =>
             {
 
                 return G.context._Listcmd_Simple();
@@ -436,7 +427,7 @@ namespace cmd
 
             #endregion
 
-            #region CVarList
+            #region CVARLIST
 
             G.context.MakeCommand( "lscvar", "__inter_cvar_ls", ( ) => {
                 Console.WriteLine();
@@ -448,6 +439,132 @@ namespace cmd
                 return RetType._C_SUCCESS;
 
             }, "Lists all CVars with their name, value and description." );
+
+            #endregion
+
+            #region GIT
+
+            G.context.CreateCommand( "git", "__inter_git", ( args ) => {
+
+                if ( args.Length != 3 ) {
+                    return RetType._C_INVALID_PARAMS;
+                }
+
+                if ( args[0] != "clone" ) {
+                    return RetType._C_RESOURCE_NOT_EXIST;
+                }
+
+                string url = args[1];
+                string path = args[2];
+
+                if ( path == "default" ) {
+                    path = "C:\\Users";
+                }
+
+                if ( !System.IO.Directory.Exists( path ) ) {
+                    return RetType._C_INVALID_PARAMS;
+                }
+
+                G.L.OG( $"The directory {path} exists." );
+
+                using ( WebClient wc = new WebClient() ) {
+                    try {
+                        wc.DownloadFile( url, $"\\data\\temp\\{G.RandomString( 25 )}" );
+                    }
+                    catch(ArgumentNullException ex) {
+                        G.L.OG( "GIT: FERR: " + ex.Message );
+                    }
+                    catch(WebException ex) {
+                        G.L.OG( "GIT: FERR: " + ex.Message );
+                    }
+                    catch(NotSupportedException ex ) {
+                        G.L.OG( "GIT: FERR: " + ex.Message );
+                    }
+                    catch {
+                        return RetType._C_INVALID_PARAMS;
+                    }
+
+                    G.L.OG( $"The web link {url} exists." );
+                }
+
+                // all checks have succeeded, let just attempt to clone it.
+
+                string prjName = string.Empty;
+                string[] spl = url.Split( '/' );
+                prjName = spl[spl.Length - 1].Split( '.' )[0];
+                System.IO.DirectoryInfo _a = null;
+
+                try {
+                    _a = System.IO.Directory.CreateDirectory( System.IO.Path.Combine( path, prjName ) );
+                }
+                catch {
+                    Console.WriteLine( $"GIT: ERR: Access to path ({System.IO.Path.Combine( path, prjName )}) is denied." );
+                    return RetType._C_ACCESSVIOLATION;
+                }
+
+                try {
+                    Repository.Clone( url, _a.FullName );
+                }
+                catch ( RecurseSubmodulesException ex ) {
+                    Console.WriteLine( "GIT: ERR: " + ex.Message + ". For help, go to " + ex.HelpLink );
+                    return RetType._C_FAILURE;
+                }
+                catch ( UserCancelledException ex ) {
+                    Console.WriteLine( "GIT: ERR: " + ex.Message + ". For help, go to " + ex.HelpLink );
+                    return RetType._C_FAILURE;
+                }
+
+                return RetType._C_SUCCESS;
+
+            }, "The git commands, currently supports clone." );
+
+            #endregion
+
+            #region POINT_STAT
+
+            G.context.CreateCommand( "cstat", "__inter_cstat", () => {
+
+                string _it = string.Empty;
+
+                using ( WebClient wc = new WebClient() ) {
+                    try {
+                        _it = wc.DownloadString( "https://raw.githubusercontent.com/DeetonRushy/cmd/master/build/rel_stab_stat.txt" );
+                    }
+                    catch {
+                        _it = "Unknown";
+                    }
+                }
+
+                ConsoleColor c = (_it == "Stable") ? ConsoleColor.Red : ConsoleColor.Green;
+
+                Console.Write( "Status: " );
+                Console.ForegroundColor = c;
+                Console.Write( _it );
+                Console.ResetColor();
+
+                return RetType._C_SUCCESS;
+
+            }, "Gets the current status for cmd." );
+
+            #endregion
+
+            #region CMD_UPDATE
+
+            G.context.CreateCommand( "update", "__inter_update_cmd", ( ) => {
+
+                using ( WebClient wc = new WebClient() ) {
+                    if ( wc.DownloadString( "https://raw.githubusercontent.com/DeetonRushy/cmd/master/build/rel_upd_ver.txt" ).Trim() == G.__version__.Trim() ) {
+                        Console.WriteLine( $"Local build up to date! ({G.__version__})" );
+                        return RetType._C_SUCCESS;
+                    }
+                    else {
+                        Console.WriteLine( $"Local build out of date.\nThis version: {G.__version__}\nRStable: {wc.DownloadString( "https://raw.githubusercontent.com/DeetonRushy/cmd/master/build/rel_upd_ver.txt" )}" );
+                    }
+                }
+
+                return RetType._C_SUCCESS;
+
+            }, "The update command for cmd." );
 
             #endregion
         }
