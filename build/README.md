@@ -2,4 +2,4 @@
 
 ## v1.1.0
 
-Drag the contents of the folder `v1.1.0` into the root directory of this project, then run BuildIt.bat and check the bin.
+Install visual studio community if you haven't already, then open the solution file located in the root folder of the project and build with vs.
