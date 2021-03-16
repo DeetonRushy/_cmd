@@ -8,12 +8,11 @@ namespace cmd
 {
     public class Command
     {
-        public Command(string _name, Func<RetType> fmt, string _desc, params string[] _Arguements)
+        public Command( string _name, Func<RetType> fmt, string _desc )
         {
             Name = _name;
             Function = fmt;
             Description = _desc;
-            Arguements = _Arguements;
         }
 
         ~Command() { }
@@ -44,6 +43,9 @@ namespace cmd
             return Name;
         }
 
+        /// <summary>
+        /// The name of the command ( typeable )
+        /// </summary>
         public string Name
         {
             get;
@@ -51,6 +53,9 @@ namespace cmd
 
         } = "default";
 
+        /// <summary>
+        /// The function that is executed on the command name being typed.
+        /// </summary>
         public Func<RetType> Function
         {
             get;
@@ -58,6 +63,9 @@ namespace cmd
 
         } = null;
 
+        /// <summary>
+        /// The brief description explaining the command and its functionality.
+        /// </summary>
         public string Description
         {
             get;
@@ -65,6 +73,10 @@ namespace cmd
 
         } = "default";
 
+        /// <summary>
+        /// The arguments.
+        /// </summary>
+        [Obsolete]
         public string[] Arguements
         {
             get;

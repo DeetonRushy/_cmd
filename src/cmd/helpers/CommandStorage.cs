@@ -27,19 +27,32 @@ namespace cmd
 
 
         public IDictionary<Assembly, ICmdPlugin> PluginWorkload;
-        public bool CreateCommand(string _typ, string _name, Func<RetType> fmt, string _desc)
+        public bool CreateCommand(string SectionName, Func<RetType> fmt)
         {
-            if (StorageWorkload.ContainsKey(_typ))
+            if ( !G.cfg.Sections.ContainsSection(SectionName) ) {
+                return false;
+            }
+
+            var _name = G.cfg[SectionName]["Name"];
+            var _inam = G.cfg[SectionName]["InternalName"];
+            var _desc = G.cfg[SectionName]["Description"];
+
+            if (StorageWorkload.ContainsKey(_name))
             {
                 return true;
             }           
 
             Command _new = new Command(_name, fmt, _desc);
-            StorageWorkload.Add(_typ, _new);
+            StorageWorkload.Add(_name, _new);
 
-            return StorageWorkload.ContainsKey(_typ);
+            return StorageWorkload.ContainsKey(_name);
         }
 
+        /// <summary>
+        /// Create a command
+        /// </summary>
+        /// <param name="_typ"></param>
+        /// <returns></returns>
         public RetType Run(string _typ)
         {
             if (G._case_sensitive)

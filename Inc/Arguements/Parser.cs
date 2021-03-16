@@ -26,8 +26,17 @@ namespace cmd
 
         ~Parser() { }
 
+        /// <summary>
+        /// Checks the command-line for a single word, sets a referenced bool to specified value.
+        /// </summary>
+        /// <param name="arg">The string value to search for.</param>
+        /// <param name="decl">The referenced bool, will be set on found.</param>
+        /// <param name="toSetTo">The value to set referenced bool to.</param>
+        /// <returns><c>this</c> to allow nicer looking code.</returns>
         public Parser add_optional(string arg, ref bool decl, bool toSetTo)
         {
+            G.L.OG( $"[parser] parsing optional argument ({arg})" );
+
             if (_args.Length == 0)
                 return this;
 
@@ -43,6 +52,8 @@ namespace cmd
             return this;
         }
 
+        /// <param name="err">The exit code.</param>
+        /// <returns><c>this</c>, no clue why.</returns>
         private Parser Exit(int err)
         {
             if (ErrorInfo.ContainsKey("true"))
@@ -63,14 +74,22 @@ namespace cmd
 
             if (exit_on_error)
             {
-                Environment.Exit(0);
+                Environment.Exit(err);
             }
 
             return this; // never reached if exit on error is on.
         }
 
+        /// <summary>
+        /// Sets the error message on failure to find required argument.
+        /// </summary>
+        /// <param name="message">The message to display.</param>
+        /// <param name="title">The title of the messagebox</param>
+        /// <returns><c>this</c>, to allow cleaner looking code.</returns>
         public Parser set_error_on_required(string message, string title = "Error!")
         {
+            G.L.OG( $"[parser] setting error on required failure ({title}, {message})" );
+
             if (ErrorInfo.Count != 0)
             {
                 ErrorInfo["true"] = new ErrorInformation() { _message = message, _title = title };
@@ -81,41 +100,58 @@ namespace cmd
             return this;
         }
 
-        public Parser add_required_with_answer(string arg, ref string[] decl)
-        {
-            // we check for the arguement then check the two arguements after that.
-            // if arg2 is an = we keep going.
-            // arg3 will then be the data they're passing.
-            // we search for a comma after the data to allow us to know where it stops.
+        /// <summary>
+        /// Will search the command line for formatted string with this format
+        /// <code>
+        /// KEY=VALUE
+        /// </code>
+        /// If found, the passed delegate is executed with the <c>VALUE</c> passed as the parameter.
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <param name="fn"></param>
+        /// <returns></returns>
+        public Parser add_required_with_input( string arg, Func<string, RetType> fn ) {
 
-            string[] _work = _args;
-            
-            // EXAMPLE: --info-arguement = name deeton fun, 
-            // We look for the flag '--info-arguement'
-            // We then grab the data {"name", "deeton", "fun"}
-            // Then we see the ',' and know it's the end of the data.
-
-            for(int i = 0; i < _work.Length; i++)
-            {
-                if (i >= _work.Length || i+2 >= _work.Length) // make sure index isn't out of range.
-                    break;
-
-                if(_work[i] == arg && _work[i+1] == "=") // arg1 is the keyword && arg2 is '='
-                {
-                    for(int q = i; _work[q] == ","; q++) // loop from the current index until _work[q] is a comma
-                    {
-                        decl.Append(_work[q]); // append the data to our result.
-                    }
-
-                    return this; // return the instance for pretty looks :)
-                }
+            if ( _args.Length == 0 ) {
+                return this;
             }
 
-            return Exit(-1); // all failed, return null & let the program crash.
+            string[] _work = _args;
+
+            for(int i = 0; i < _work.Length; i++ ) {
+                if ( !_work[i].Contains(arg) || !_work.Contains("=" ) ) {
+                    continue;
+                }
+
+                var nw = _work[i].Split( '=' );
+
+                if ( !(nw.Length == 2) ) {
+                    continue;
+                }
+
+                if ( !(nw[0] == arg) ) {
+                    continue;
+                }
+
+                G.L.OG( $"[args] found {arg}. executing partner function." );
+
+                fn( nw[1] );
+            }
+
+            return this;
         }
 
+        /// <summary>
+        /// Checks the command-line for a single word, sets a referenced bool to specified value.
+        /// </summary>
+        /// <param name="arg">The string value to search for.</param>
+        /// <param name="decl">The referenced bool, will be set on found.</param>
+        /// <param name="toSetTo">The value to set referenced bool to.</param>
+        /// <returns><c>this</c> to allow nicer looking code.</returns>
         public Parser add_required(string arg, ref bool decl, bool toSetTo)
         {
+            G.L.OG( $"[parser] parsing required argument ({arg})" );
+
             foreach (string _arg in _args)
             {
                 if(_arg == arg)

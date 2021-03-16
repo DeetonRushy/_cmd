@@ -39,6 +39,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="External\default_config.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Htu\README.md" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -47,12 +50,13 @@
     <Compile Include="Inc\Dictionary\Dictionary.cs" />
     <Compile Include="Inc\Global.cs" />
     <Compile Include="Inc\Logging\Logging.cs" />
-    <Compile Include="src\cmd\helpers\cvar\ConsoleVariableWorker.cs" />
+    <Compile Include="src\cmd\helpers\ConsoleVariable\ConsoleVariableWorker.cs" />
     <Compile Include="src\cmd\helpers\Plugins\ICmdPlugin.cs" />
     <Compile Include="src\reference\Internal\Command.cs" />
     <Compile Include="src\reference\Internal\CommandWithArguements.cs" />
     <Compile Include="src\reference\Internal\Delegates\CreateDelegateHandler.cs" />
     <Compile Include="src\reference\Internal\ErrorTranslation.cs" />
+    <Compile Include="src\reference\Internal\Structures\StringPool\StringPool.cs" />
     <Compile Include="src\reference\ReturnTypes.cs" />
     <Compile Include="src\cmd\helpers\CommandExecutor.cs" />
     <Compile Include="src\cmd\helpers\CommandStorage.cs" />
@@ -60,8 +64,13 @@
     <Compile Include="src\cmd\Start.cs" />
     <Compile Include="src\entry.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <Folder Include="src\cmd\helpers\Plugins\Internal\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
+      <HintPath>packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
+    </Reference>
     <Reference Include="LibGit2Sharp, Version=0.26.0.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
       <HintPath>packages\LibGit2Sharp.0.26.2\lib\net46\LibGit2Sharp.dll</HintPath>
     </Reference>
@@ -78,6 +87,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Speech" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -87,4 +97,11 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\LibGit2Sharp.NativeBinaries.2.0.306\build\net46\LibGit2Sharp.NativeBinaries.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\LibGit2Sharp.NativeBinaries.2.0.306\build\net46\LibGit2Sharp.NativeBinaries.props'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>
+    if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
+    xcopy /s /y "$(SolutionDir)packages\Noesis.Javascript.0.7.1.0\NativeBinaries\net40\x86\*.*" "$(TargetDir)x86"
+    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
+    xcopy /s /y "$(SolutionDir)packages\Noesis.Javascript.0.7.1.0\NativeBinaries\net40\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

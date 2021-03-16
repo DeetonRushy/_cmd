@@ -1,25 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-
+﻿
 namespace cmd
 {
     class Entry
     {
         static void Main(string[] args)
         {
+            G.__on_start();
+
             Parser arg_worker = new Parser(args);
-            bool IsFirstTime = false;
+            bool IsFirstTime = true;
 
             arg_worker
                 .add_optional( "--disable-flush", ref Start.__flush_disabled__, true )
                 .add_optional( "--disable-arguements", ref Start.__arguement_cmds_disabled__, true ) // __ is reserved for compiler generated symbols but eh
                 .add_optional( "--disable-case-sens", ref G._case_sensitive, false )
-                .add_optional( "--first-time-init", ref IsFirstTime, true );
+                .add_optional( "--first-time-init", ref IsFirstTime, true )
+                #region SCRIPT
 
+                .add_required_with_input( "--script", ( _args ) => {
+
+                    if ( !System.IO.File.Exists( _args ) ) {
+                        return RetType._C_SYSTEM_ERROR;
+                    }
+
+                    string[] fdata = System.IO.File.ReadAllLines( _args );
+
+                    if ( fdata.Length == 0 ) {
+                        return RetType._C_FAILURE;
+                    }
+
+                    foreach(var line in fdata ) {
+                        G.context.ExecuteCommand( line );
+                    }
+
+                    return RetType._C_SUCCESS;
+
+                } );
+
+                #endregion
+
+            if ( IsFirstTime ) {
+                System.IO.Directory.CreateDirectory( "data\\temp" );
+                System.IO.Directory.CreateDirectory( "data\\plugins" );
+                System.IO.Directory.CreateDirectory( "data\\config" );
+            }
 
         Reset:
 

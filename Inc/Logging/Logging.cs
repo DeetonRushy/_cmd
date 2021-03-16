@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace cmd
 {
@@ -61,23 +62,29 @@ namespace cmd
             }
 
             #endregion
-
         }
 
-        public bool OG(params string[] Information)
+        public bool OG(string info, [CallerFilePath] string fpo = "", [CallerLineNumber] int ln = 0, [CallerMemberName] string cmn = "")
         {
             if (!success) // failed to init
             {
                 return success; // cancel log.
             }
 
+            string fp = "";
+            string[] spl = fpo.Split( '\\' );
+            fp = spl[spl.Length - 1];
+            string fpc = fp.Split( '.' )[0];
+
             if (File.Exists(session)) // make sure file exists
             {
-                foreach (string log in Information) // iterate params
-                {
-                    string fmt = string.Format( "{0}", DateTime.Now.ToShortDateString() );
-                    File.WriteAllText( this.session, fmt + " " + log + "\n" );
-                }
+                string fmt = string.Format( "--------------------------------\n<{0}> [({1}({2}) [{3}::{4}(...)]]\n",
+                    DateTime.Now.ToLongTimeString(),
+                    fp,
+                    ln,
+                    fpc,
+                    cmn );
+                File.AppendAllText( this.session, fmt + " " + info + "\n" );
             }
             else
             {

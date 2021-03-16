@@ -16,15 +16,16 @@ namespace cmd
 
             #region UnitSetup
 
-            TranslationUnit.Add(RetType._C_ACCESSVIOLATION, "There was an access violation.");
-            TranslationUnit.Add(RetType._C_FAILURE, "The operation failed.");
-            TranslationUnit.Add(RetType._C_IOERROR, "There was an IO error.");
-            TranslationUnit.Add(RetType._C_SUCCESS, "The operation completed sucessfully.");
-            TranslationUnit.Add(RetType._C_UNKNOWN_ERROR, "There was an unknown error.");
-            TranslationUnit.Add(RetType._C_DISABLED, "Command has been disabled by the command line.");
-            TranslationUnit.Add(RetType._C_SYSTEM_ERROR, "There was an error performing a system command. (syscall)");
-            TranslationUnit.Add(RetType._C_RESOURCE_NOT_EXIST, "The command doesn't exist.");
-            TranslationUnit.Add( RetType._C_INVALID_PARAMS, "The parameters were invalid." );
+            TranslationUnit.Add(RetType._C_ACCESSVIOLATION, G.cfg["Mappings"]["ACCESS_VIO"]);
+            TranslationUnit.Add(RetType._C_FAILURE, G.cfg["Mappings"]["FAIL"] );
+            TranslationUnit.Add(RetType._C_IOERROR, G.cfg["Mappings"]["IOERR"] );
+            TranslationUnit.Add(RetType._C_SUCCESS, G.cfg["Mappings"]["SUCCESS"] );
+            TranslationUnit.Add(RetType._C_UNKNOWN_ERROR, G.cfg["Mappings"]["UNKNOWN_ERROR"] );
+            TranslationUnit.Add(RetType._C_DISABLED, G.cfg["Mappings"]["DISABLED"] );
+            TranslationUnit.Add(RetType._C_SYSTEM_ERROR, G.cfg["Mappings"]["SYSTEM_ERROR"] );
+            TranslationUnit.Add(RetType._C_RESOURCE_NOT_EXIST, G.cfg["Mappings"]["RES_NOT_EXIST"] );
+            TranslationUnit.Add( RetType._C_INVALID_PARAMS, G.cfg["Mappings"]["INVAL_PARAMS"] );
+            TranslationUnit.Add( RetType._C_DUMMY_VL, G.cfg["Mappings"]["DUMMY"] );
 
             #endregion
 
@@ -35,18 +36,27 @@ namespace cmd
 
         ~ErrorTranslator() { }
 
+        /// <summary>
+        /// The error converted into a string.
+        /// </summary>
         public string Error
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The original, <c>RetType</c> form.
+        /// </summary>
         public RetType Original
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The time stamp at which the error was translated.
+        /// </summary>
         public DateTime TranslationTime
         {
             get;

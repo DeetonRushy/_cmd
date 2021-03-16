@@ -59,7 +59,7 @@ namespace cmd
                         object o = Activator.CreateInstance( info );
                         ICmdPlugin plugin = ( ICmdPlugin ) o;
 
-                        plugin.OnPluginLoad( context );
+                        plugin.OnPluginLoad( context, G.host );
                         pluginHost.Add( core, plugin );
 
                         G.L.OG( $"Loaded plugin -- ({plugin.PluginName}) made by {plugin.AuthorName}" );
