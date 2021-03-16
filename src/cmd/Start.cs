@@ -35,8 +35,6 @@ namespace cmd
 
         public void exec()
         {
-            G.L.OG( "[exec] application mainloop hit" );
-
             G.context.LoadStartInternalPlugins();
             WriteCmdStartText(0);
             G.RCVars();
@@ -90,9 +88,6 @@ namespace cmd
                 #region CVarCheck
 
                 if ( G.host.Exists( command ) ) {
-
-                    G.L.OG( $"[exec] calling OnTypedCommand. (text=\"{command}\")" );
-
                     if ( exec_w_params ) {
                         G.host.OnTypedCommand( command, _work );
                     }

@@ -56,7 +56,7 @@
     <Compile Include="src\reference\Internal\CommandWithArguements.cs" />
     <Compile Include="src\reference\Internal\Delegates\CreateDelegateHandler.cs" />
     <Compile Include="src\reference\Internal\ErrorTranslation.cs" />
-    <Compile Include="src\reference\Internal\Structures\StringPool\StringPool.cs" />
+    <None Include="src\reference\Internal\Structures\StringPool\StringPool.cs" />
     <Compile Include="src\reference\ReturnTypes.cs" />
     <Compile Include="src\cmd\helpers\CommandExecutor.cs" />
     <Compile Include="src\cmd\helpers\CommandStorage.cs" />
@@ -81,11 +81,6 @@
       <HintPath>..\..\..\Downloads\SStorage.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Diagnostics.Process, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.Process.4.3.0\lib\net461\System.Diagnostics.Process.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Speech" />
     <Reference Include="System.Windows.Forms" />

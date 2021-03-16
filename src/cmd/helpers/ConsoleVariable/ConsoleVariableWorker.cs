@@ -30,7 +30,6 @@ namespace cmd {
         /// </summary>
         public CVarHost( ) {
             Host = new Dictionary<string, CVarContainer>();
-            G.L.OG( "[cvarhost] initialized!" );
         }
 
         /// <summary>
@@ -44,8 +43,6 @@ namespace cmd {
             if ( !Exists( name ) ) {
                 return;
             }
-
-            G.L.OG( $"[cvarhost] {name} is being forcevalued to " + value );
 
             Host[name].Value = value;
         }
@@ -63,21 +60,17 @@ namespace cmd {
             }
 
             if ( p == null ) {
-                G.L.OG( "[cvarhost] printing value, user had no argument." );
                 Console.WriteLine( $"{name}: \"{Host[name].Value}\"\n" );
                 return true;
             }
 
             var value = p[0];
-            G.L.OG( $"[cvarhost] passing {value} to {name}'s lambda." );
             var rs = Host[name].OnValueChange( p );
 
             if ( rs == RetType._C_SUCCESS ) {
-                G.L.OG( $"[cvarhost] {name} accepted input!" );
                 Host[name].Value = G.StringArrayToString(p).Trim();
             }
             else {
-                G.L.OG( $"[cvarhost] {name} didn't accept the value." );
                 G.Out( rs, $"CVar hooked function didn't accept input. ({name})" );
             }
 
@@ -97,8 +90,6 @@ namespace cmd {
 
             var _a = new CVarContainer( name, description, initialValue, OnChange );
             Host.Add( name, _a );
-
-            G.L.OG( $"New CVar registered, (name={name}, desc={description})" );
         }
 
         /// <summary>

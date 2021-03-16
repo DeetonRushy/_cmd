@@ -35,8 +35,6 @@ namespace cmd
         /// <returns><c>this</c> to allow nicer looking code.</returns>
         public Parser add_optional(string arg, ref bool decl, bool toSetTo)
         {
-            G.L.OG( $"[parser] parsing optional argument ({arg})" );
-
             if (_args.Length == 0)
                 return this;
 
@@ -88,8 +86,6 @@ namespace cmd
         /// <returns><c>this</c>, to allow cleaner looking code.</returns>
         public Parser set_error_on_required(string message, string title = "Error!")
         {
-            G.L.OG( $"[parser] setting error on required failure ({title}, {message})" );
-
             if (ErrorInfo.Count != 0)
             {
                 ErrorInfo["true"] = new ErrorInformation() { _message = message, _title = title };
@@ -133,8 +129,6 @@ namespace cmd
                     continue;
                 }
 
-                G.L.OG( $"[args] found {arg}. executing partner function." );
-
                 fn( nw[1] );
             }
 
@@ -150,8 +144,6 @@ namespace cmd
         /// <returns><c>this</c> to allow nicer looking code.</returns>
         public Parser add_required(string arg, ref bool decl, bool toSetTo)
         {
-            G.L.OG( $"[parser] parsing required argument ({arg})" );
-
             foreach (string _arg in _args)
             {
                 if(_arg == arg)

@@ -55,17 +55,6 @@ namespace cmd
         /// <returns></returns>
         public RetType Run(string _typ)
         {
-            if (G._case_sensitive)
-            {
-                foreach(KeyValuePair<string, Command> kv in StorageWorkload)
-                {
-                    if(kv.Key.ToLower() == _typ.ToLower())
-                    {
-                        return StorageWorkload[kv.Key].Function.Invoke();
-                    }
-                }
-            }
-
             return StorageWorkload[_typ].Function.Invoke();
         }
 
@@ -79,22 +68,6 @@ namespace cmd
                 return RetType._C_FAILURE;
 
                 #endregion
-            }
-
-            if (G._case_sensitive)
-            {
-                foreach (KeyValuePair<string, Command> kv in StorageWorkload)
-                {
-                    if (kv.Key.ToLower() == _typ.ToLower())
-                    {
-                        DelegateHandler _worker = new DelegateHandler(
-                             StorageWorkloadArgs[kv.Key].Function,
-                             ref _params);
-
-                        _worker.Execute(out RetType _result);
-                        return _result;
-                    }
-                }
             }
 
             DelegateHandler worker = new DelegateHandler(
@@ -130,21 +103,11 @@ namespace cmd
 
         public bool Exists(string _typ)
         {
-            if (G._case_sensitive)
-            {
-                return StorageWorkload.ContainsKey(_typ.ToLower());
-            }
-
             return StorageWorkload.ContainsKey(_typ);
         }
 
         public bool ExistsW(string _typ)
         {
-            if (G._case_sensitive)
-            {
-                return StorageWorkloadArgs.ContainsKey(_typ.ToLower());
-            }
-
             return StorageWorkloadArgs.ContainsKey(_typ);
         }
     }

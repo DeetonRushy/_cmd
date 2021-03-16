@@ -13,7 +13,6 @@ namespace cmd
             arg_worker
                 .add_optional( "--disable-flush", ref Start.__flush_disabled__, true )
                 .add_optional( "--disable-arguements", ref Start.__arguement_cmds_disabled__, true ) // __ is reserved for compiler generated symbols but eh
-                .add_optional( "--disable-case-sens", ref G._case_sensitive, false )
                 .add_optional( "--first-time-init", ref IsFirstTime, true )
                 #region SCRIPT
 

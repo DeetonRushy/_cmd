@@ -22,7 +22,6 @@ namespace cmd
             // firstly, we search for available plugins in the data/plugins directory.
 
             if ( !Directory.Exists( "data\\plugins" ) ) {
-                G.L.OG( "Cannot load plugins, corrupted FS layout." );
                 return;
             }
 
@@ -37,7 +36,6 @@ namespace cmd
                     ass = Assembly.Load( pluginpath );
                 }
                 catch {
-                    G.L.OG( $"Failed to load plugin {pluginpath}. An exception was thrown when try to execute the binary." );
                     continue;
                 }
 
@@ -61,12 +59,9 @@ namespace cmd
 
                         plugin.OnPluginLoad( context, G.host );
                         pluginHost.Add( core, plugin );
-
-                        G.L.OG( $"Loaded plugin -- ({plugin.PluginName}) made by {plugin.AuthorName}" );
                     }
                 }
                 catch {
-                    G.L.OG( $"Failed to load plugin -- {pluginpath}, there was an exception during assembly load." );
                 }
 
             }

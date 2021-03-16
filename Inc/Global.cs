@@ -8,13 +8,6 @@ using cmd;
 
 public static class G {
 
-    // Global instance of our file logger.
-    #region Logger Instance
-
-    public static GOG L = new GOG( "data\\logs" );
-
-    #endregion
-
     // Returns a string[] as a string.
     #region String Array Converter
 
@@ -58,16 +51,12 @@ public static class G {
                 return RetType._C_FAILURE;
             }
 
-            L.OG( "[console.bufferwidth] allowing edit - " + arg );
-
             Console.BufferWidth = ( short ) arg;
             return RetType._C_SUCCESS;
 
         }, Console.BufferWidth.ToString(), "The buffer-width size." );
 
         host.CreateCVar( "console.title", ( _arg ) => {
-
-            L.OG( "[console.title] allowing edit - " + StringArrayToString( _arg ) );
             Console.Title = StringArrayToString( _arg );
             return RetType._C_SUCCESS;
 
@@ -79,8 +68,6 @@ public static class G {
             if ( !(_new.Length <= 25) ) {
                 return RetType._C_FAILURE;
             }
-
-            L.OG( "[cmd.pointer] allowing edit - " + _new );
 
             line_pointer = _new;
             return RetType._C_SUCCESS;
@@ -111,14 +98,11 @@ public static class G {
 
             if ( GetColor( args[0] ) == ConsoleColor.White ) {
 
-                L.OG( "[console.foregroundcolor] allowing -reset" );
-
                 Console.ForegroundColor = ConsoleColor.White;
                 host.ModifyCVarForce( "Console.ForegroundColor", "default-white" );
                 return RetType._C_DUMMY_VL;
             }
 
-            L.OG( "[console.foregroundcolor] allowing edit - " + GetColor( args[0] ) );
             Console.ForegroundColor = GetColor( args[0] );
 
             return RetType._C_SUCCESS;
@@ -137,21 +121,17 @@ public static class G {
                 return RetType._C_DISABLED;
             }
 
-            L.OG( "[console.cursorsize] accepted size - " + _res );
-
             return RetType._C_SUCCESS;
         }, Console.CursorSize.ToString(), "The console cursor size." );
 
         host.CreateCVar( "console.cursorvisible", ( args ) => {
 
             if ( args[0].ToLower() == "true" ) {
-                G.L.OG( "[console.cursorvisible] allowing edit - True" );
                 Console.CursorVisible = true;
                 return RetType._C_SUCCESS;
             }
             else {
                 Console.CursorVisible = false;
-                G.L.OG( "[console.cursorvisible] allowing edit - True" );
                 host.ModifyCVarForce( "Console.CursorVisible", "false" );
                 return RetType._C_DUMMY_VL;
             }

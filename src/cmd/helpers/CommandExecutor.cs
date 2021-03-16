@@ -53,13 +53,6 @@ namespace cmd
                 #endregion
             }
 
-            // check if the program is running case sensitive.
-            if (G._case_sensitive)
-            {
-                // we attempt to execute the ToLower invariant.
-                return Run(_rname.ToLower());
-            }
-
             // run the command.
             return Run(_rname);
         }
@@ -70,11 +63,6 @@ namespace cmd
         {
             // we don't need to check if the command exists, the param execute function does it all
             // for us.
-
-            if (G._case_sensitive)
-            {
-                return Run(_rname.ToLower(), arguments);
-            }
 
             return Run(_rname, arguments);
         }
@@ -189,7 +177,6 @@ namespace cmd
             #region HELP
 
             G.context.MakeCommand( "STD_HELP", ( ) => {
-                G.L.OG( "Help ran without arguments, running /?" );
                 return G.context.ExecuteCommand( "help", "/?" );
 
             });
@@ -428,8 +415,6 @@ namespace cmd
             G.context.MakeCommand( "STD_LIST_CONSOLE_VARIABLES", ( ) => {
                 Console.WriteLine();
 
-                G.L.OG( "[lscvar]: Listing ConsoleVariables." );
-
                 foreach ( KeyValuePair<string, CVarContainer> kvp in G.host.Host ) {
                     Console.WriteLine( $"\"{kvp.Value.Name}: \"{kvp.Value.Value}\". \n\"{kvp.Value.Description}\"\n" );
                 }
@@ -445,7 +430,6 @@ namespace cmd
             G.context.CreateCommand( "STD_GIT", ( args ) => {
 
                 if ( args.Length != 3 ) {
-                    G.L.OG( $"[git] params incorrect. expected 3, got {args.Length}" );
                     return RetType._C_INVALID_PARAMS;
                 }
 
@@ -457,12 +441,10 @@ namespace cmd
                 string path = args[2];
 
                 if ( path == "default" ) {
-                    G.L.OG( $"[git] using default path (C:\\Users\\{Environment.UserName})" );
                     path = "C:\\Users\\" + Environment.UserName;
                 }
 
                 if ( !System.IO.Directory.Exists( path ) ) {
-                    G.L.OG( $"[git] path param incorrect, does not exist." );
                     return RetType._C_INVALID_PARAMS;
                 }
 
@@ -470,23 +452,19 @@ namespace cmd
                     try {
                         wc.DownloadFile( url, $"data\\temp\\{G.RandomString( 25 )}.tmp" );
                     }
-                    catch ( ArgumentNullException ex ) {
-                        G.L.OG( "GIT: FERR: " + ex.Message );
+                    catch ( ArgumentNullException ) {
                         return RetType._C_INVALID_PARAMS;
                     }
-                    catch ( WebException ex ) {
-                        G.L.OG( "GIT: FERR: " + ex.Message );
+                    catch ( WebException ) {
                         return RetType._C_INVALID_PARAMS;
                     }
-                    catch ( NotSupportedException ex ) {
-                        G.L.OG( "GIT: FERR: " + ex.Message );
+                    catch ( NotSupportedException ) {
                         return RetType._C_INVALID_PARAMS;
                     }
                     catch {
                         return RetType._C_INVALID_PARAMS;
                     }
 
-                    G.L.OG( $"[git] The web link {url} exists." );
                 }
 
                 // all checks have succeeded, let just attempt to clone it.
@@ -494,8 +472,6 @@ namespace cmd
                 string prjName = string.Empty;
                 string[] spl = url.Split( '/' );
                 prjName = spl[spl.Length - 1].Split( '.' )[0];
-
-                G.L.OG( "[git] naming new empty file: " + prjName );
 
                 System.IO.DirectoryInfo _a = null;
 
@@ -519,7 +495,6 @@ namespace cmd
                     return RetType._C_FAILURE;
                 }
 
-                G.L.OG( $"[git] success, cloned {url} to {_a.FullName}" );
                 return RetType._C_SUCCESS;
 
             } );
@@ -540,8 +515,6 @@ namespace cmd
                         _it = "Unknown";
                     }
                 }
-
-                G.L.OG( "[cstat] current status: " + _it );
 
                 ConsoleColor c = (_it == "Stable") ? ConsoleColor.Red : ConsoleColor.Green;
 
@@ -609,12 +582,8 @@ namespace cmd
                         System.IO.File.Delete( fl );
                     }
                     catch {
-                        G.L.OG( "[ctemp] failed to delete file \"" + fl + "\"" );
                         continue;
                     }
-
-                    G.L.OG( "Cleared temporary file - \"" + fl + "\"" );
-
                 }
 
                 return RetType._C_SUCCESS;
