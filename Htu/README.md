@@ -41,4 +41,4 @@ To attempt to modify the value of a cvar, type the name of it and then the value
 | 3 | The initial value for the con-var to hold. |
 | 4 | Brief description of the value and what power it holds. |
 
-This is quite powerful because it lets the user decide configuration for certain aspects of the program.
+This is quite powerful because it lets the user decide configuration for certain aspects of the program interactively.
