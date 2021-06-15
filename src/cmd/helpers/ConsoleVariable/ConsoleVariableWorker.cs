@@ -51,7 +51,7 @@ namespace cmd {
         /// This is executed everytime someone types a cvar into the console.
         /// </summary>
         /// <param name="name">The name of the cvar.</param>
-        /// <param name="p">The parameters if there was any. <c>null</c> otherwise.</param>
+        /// <param name="p">The parameters if there. <c>null</c> otherwise.</param>
         /// <returns><c>true</c> if the operation was a success, otherwise <c>false</c>.</returns>
         public bool OnTypedCommand( string name, string[] p ) {
 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using static G;
 
 namespace cmd
 {
@@ -14,6 +12,7 @@ namespace cmd
         {
             StorageWorkload   = new Dictionary<string, Command>();
             StorageWorkloadArgs = new Dictionary<string, CommandWithArguements>();
+            PluginWorkload = new Dictionary<Assembly, ICmdPlugin>();
         }
 
         ~CommandStorage() { }
@@ -26,10 +25,12 @@ namespace cmd
 
         public IDictionary<string, CommandWithArguements> StorageWorkloadArgs; // WIP, will hold all commands that have arguements.
 
+
+        public IDictionary<Assembly, ICmdPlugin> PluginWorkload;
         public bool CreateCommand(string SectionName, Func<RetType> fmt)
         {
-            if ( !cfg.Sections.ContainsSection(SectionName) ) {
-                return MbErr( $"Requested to read section that does not exist. ({SectionName})", false);
+            if ( !G.cfg.Sections.ContainsSection(SectionName) ) {
+                return false;
             }
 
             var _name = G.cfg[SectionName]["Name"];
@@ -63,13 +64,13 @@ namespace cmd
             {
                 #region RunOverrideErrorOutput
 
-                Out(RetType._C_FAILURE, $"type 'help' for information.");
+                G.Out(RetType._C_RESOURCE_NOT_EXIST, $"type 'help' for information.");
                 return RetType._C_FAILURE;
 
                 #endregion
             }
 
-            var worker = new DelegateHandler(
+            DelegateHandler worker = new DelegateHandler(
                 StorageWorkloadArgs[_typ].Function,
                 ref _params);
 

@@ -25,40 +25,9 @@ namespace cmd_NonGit
             OnUpdate();
         }
 
-        private bool CompareT<T, T2>( T f, T2 s ) {
-            var a = ( object ) f;
-            return a.Equals( s );
-        }
-
         private void ShiftArrayDown<T>(ref T[] Arr)
         {
             Array.Sort(Arr);
-        }
-
-        private TValue Find( TKey v ) {
-            for(int i = 0; i < _keys.Length; i++ ) {
-                if( CompareT( _keys[i], v ) ) {
-                    return _values[i];
-                }
-            }
-
-            throw new KeyNotFoundException( $"the key \"{v}\" does not exist." );
-        }
-
-        private void Set( TKey key, TValue value ) {
-            var index = FindIndex( key );
-            _values[index] = value;
-            OnUpdate();
-        }
-
-        private int FindIndex( TKey v ) {
-            for ( int i = 0; i < _keys.Length; i++ ) {
-                if ( CompareT( _keys[i], v ) ) {
-                    return i;
-                }
-            }
-
-            throw new KeyNotFoundException( $"the key \"{v}\" does not exist." );
         }
 
         private void OnUpdate()
@@ -80,23 +49,6 @@ namespace cmd_NonGit
                     }
                 }
             }
-        }
-
-        public TValue this[TKey k] {
-            get => Find( k );
-            set => Set( k, value );
-        }
-
-        public void Add( TKey k, TValue v ) => Set( k, v );
-
-        public TValue At( TKey k ) => this[k];
-
-        public static void RunTest( ) {
-            var dict = new _Dictionary<string, int>(12);
-
-            dict.Add( "Age", 18 );
-
-            Console.WriteLine( $"_DICTIONARY: Value For 'Age' is {dict.At( "age" )}." );
         }
     }
 }
