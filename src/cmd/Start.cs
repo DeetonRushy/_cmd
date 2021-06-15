@@ -2,22 +2,12 @@
 using System.Collections.Generic;
 using LibGit2Sharp;
 using System.Net;
+using cmd_NonGit;
 
 namespace cmd
 {
     public sealed class Start
     {
-        // if --disable-flush is passed as a parameter, this is true.
-        // this then causes flush to cancel on execution.
-
-        #region CommandLineVariables
-
-        public static bool __flush_disabled__ = false;
-        public static bool __arguement_cmds_disabled__ = false;
-
-        #endregion
-
-
         public object _lock;
 
         public Start() { _lock = new object(); }
@@ -44,7 +34,7 @@ namespace cmd
             // ( which is not yet created. ) 
             // All files and commands can then be developed externally.
 
-            PluginLoader.LoadAllPlugins( ref G.context.PluginWorkload, ref G.context );
+            // PluginLoader.LoadAllPlugins( ref G.context.PluginWorkload, ref G.context );
 
             while (true)
             {
@@ -55,18 +45,15 @@ namespace cmd
                 if (G.restart_needed)
                     break; // Panic has been called.
 
-                string command = Console.ReadLine();
+                var inputReader = new DrInput();
+
+                string command = inputReader.ReadLine( true );
+                command.Replace( '\n', ' ' );
 
                 #region InputParsing
 
                 bool exec_w_params = false;
                 string[] _work = command.Split();
-
-                lock (_lock)
-                {
-                    if (__arguement_cmds_disabled__)
-                        goto SkipParse;
-                }
 
                 if (_work.Length > 1)
                 {
@@ -103,9 +90,8 @@ namespace cmd
                 RetType result = exec_w_params ? G.context.ExecuteCommand(command, _work) : G.context.ExecuteCommand(command);
                 ErrorTranslator _Ts = new ErrorTranslator(result);
                 
-
                 #region Title&Seperator
-                Console.Title = "Command returned -> " + _Ts.Error + " | " + G.__version__;
+                Console.Title = "Status: " + _Ts.Error + " | " + G.__version__;
                 Console.WriteLine();
                 #endregion
             }

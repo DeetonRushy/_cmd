@@ -7,15 +7,15 @@ using LibGit2Sharp;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Speech.Synthesis;
-using System.Windows.Forms;
+using System.IO;
+using System.Linq;
 
-namespace cmd
-{
-    public class CommandExecutor : CommandStorage, IDisposable
-    {
-        [Obsolete("Construct the class with no arguments.")]
-        public CommandExecutor([CallerFilePath] string fp = "")
-        {
+using static G;
+
+namespace cmd {
+    public class CommandExecutor : CommandStorage, IDisposable {
+        [Obsolete( "Construct the class with no arguments." )]
+        public CommandExecutor( [CallerFilePath] string fp = "" ) {
             // redundant
             // code deleted.
         }
@@ -24,14 +24,12 @@ namespace cmd
 
         }
 
-        ~CommandExecutor() { }
+        ~CommandExecutor( ) { }
 
-        public void Dispose()
-        {
-            SafeHandle _handle = new SafeFileHandle(IntPtr.Zero, true);
+        public void Dispose( ) {
+            SafeHandle _handle = new SafeFileHandle( IntPtr.Zero, true );
 
-            if(_handle?.DangerousGetHandle() != null)
-            {
+            if ( _handle?.DangerousGetHandle() != null ) {
                 _handle?.Dispose();
             }
         }
@@ -39,12 +37,11 @@ namespace cmd
         // The execute function for commands that do not take
         // any arguments.
 
-        public RetType ExecuteCommand(string _rname) // rname = readable name, the name they type.
+        public RetType ExecuteCommand( string _rname ) // rname = readable name, the name they type.
         {
             // make sure the command exists.
 
-            if (!Exists(_rname))
-            {
+            if ( !Exists( _rname ) ) {
                 #region ExecuteCommandErrorOutput
 
                 // the command does not exist, return failure.
@@ -54,17 +51,16 @@ namespace cmd
             }
 
             // run the command.
-            return Run(_rname);
+            return Run( _rname );
         }
 
         // alternative, for commands with arguements.
 
-        public RetType ExecuteCommand(string _rname, params string[] arguments)
-        {
+        public RetType ExecuteCommand( string _rname, params string[] arguments ) {
             // we don't need to check if the command exists, the param execute function does it all
             // for us.
 
-            return Run(_rname, arguments);
+            return Run( _rname, arguments );
         }
 
         // The main function to create a command.
@@ -72,9 +68,8 @@ namespace cmd
         // Nothing special happens in here, we just return a protected function
         // from command storage.
 
-        public bool MakeCommand(string SectionName , Func<RetType> fmt)
-        {
-            return CreateCommand(SectionName, fmt);
+        public bool MakeCommand( string SectionName, Func<RetType> fmt ) {
+            return CreateCommand( SectionName, fmt );
         }
 
         /// <summary>
@@ -88,13 +83,13 @@ namespace cmd
         /// <returns></returns>
         public bool CreateCommand( string SectionName, Func<string[], RetType> fmt ) {
 
-            if ( !G.cfg.Sections.ContainsSection(SectionName) ) {
+            if ( !G.cfg.Sections.ContainsSection( SectionName ) ) {
                 return false;
             }
 
-            var _typ       = G.cfg[SectionName]["Name"];
+            var _typ = G.cfg[SectionName]["Name"];
             var inter_name = G.cfg[SectionName]["InternalName"];
-            var _desc      = G.cfg[SectionName]["Description"]; 
+            var _desc = G.cfg[SectionName]["Description"];
 
             if ( StorageWorkloadArgs.ContainsKey( _typ ) ) {
                 return true; // return true because the command already exists.
@@ -115,61 +110,16 @@ namespace cmd
 
         #region command_definitions
 
-        public RetType __cmd_ls()
-        {
-            RetType result = RetType._C_SUCCESS;
-            ConsoleColor _col = Console.ForegroundColor;
-
-            foreach (KeyValuePair<string, Command> _c in StorageWorkload)
-            {
-                try
-                {
-                    #region _Listcmd_Simple_Output
-
-                    Console.Write("Command -> ");
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write(_c.Key + "\n");
-                    Console.ResetColor();
-                    Console.Write("Desc    -> ");
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(_c.Value.Description + "\n");
-                    Console.ResetColor();
-                    Console.WriteLine();
-
-                    #endregion
-                }
-                catch
-                {
-                    result = RetType._C_ACCESSVIOLATION;
-                }
+        public RetType __cmd_ls( ) {
+            foreach ( KeyValuePair<string, Command> _command in StorageWorkload ) {
+                Console.WriteLine( $"{_command.Value.Name} = {_command.Value.Description}" );
             }
 
-            foreach (KeyValuePair<string, CommandWithArguements> _c in StorageWorkloadArgs)
-            {
-                try
-                {
-                    #region _Listcmd_Simple_Output_Args
-
-                    Console.Write("Command -> ");
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.Write(_c.Key + "\n");
-                    Console.ResetColor();
-                    Console.Write("Desc    -> ");
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write(_c.Value.Description + "\n");
-                    Console.ResetColor();
-                    Console.WriteLine();
-
-                    #endregion
-                }
-                catch
-                {
-                    result = RetType._C_ACCESSVIOLATION;
-                }
+            foreach ( KeyValuePair<string, CommandWithArguements> _command in StorageWorkloadArgs ) {
+                Console.WriteLine( $"{_command.Value.Name} - {_command.Value.Description}" );
             }
 
-            Console.ForegroundColor = _col;
-            return result;
+            return RetType._C_SUCCESS;
         }
 
         public void LoadStartInternalPlugins( ) {
@@ -179,7 +129,7 @@ namespace cmd
             G.context.MakeCommand( "STD_HELP", ( ) => {
                 return G.context.ExecuteCommand( "help", "/?" );
 
-            });
+            } );
 
             #endregion
 
@@ -429,6 +379,11 @@ namespace cmd
 
             G.context.CreateCommand( "STD_GIT", ( args ) => {
 
+                if ( args[0] == "--help" ) {
+                    Console.WriteLine( "git clone <link> <path>\nPath can be 'default' and path will be C:\\Users\\<name>\\<repo-name>" );
+                    return RetType._C_SUCCESS;
+                }
+
                 if ( args.Length != 3 ) {
                     return RetType._C_INVALID_PARAMS;
                 }
@@ -444,7 +399,7 @@ namespace cmd
                     path = "C:\\Users\\" + Environment.UserName;
                 }
 
-                if ( !System.IO.Directory.Exists( path ) ) {
+                if ( !/*System.IO.*/Directory.Exists( path ) ) {
                     return RetType._C_INVALID_PARAMS;
                 }
 
@@ -533,14 +488,30 @@ namespace cmd
 
             G.context.CreateCommand( "STD_UPDATE", ( ) => {
 
+                float ex_version;
+                float in_version = float.Parse( G.__version__ );
+
                 using ( WebClient wc = new WebClient() ) {
-                    if ( wc.DownloadString( "https://raw.githubusercontent.com/DeetonRushy/cmd/master/build/rel_upd_ver.txt" ).Trim() == G.__version__.Trim() ) {
-                        Console.WriteLine( $"Local build up to date! ({G.__version__})" );
-                        return RetType._C_SUCCESS;
+                    try {
+                        ex_version = float.Parse( wc.DownloadString( "https://raw.githubusercontent.com/DeetonRushy/cmd/master/build/rel_upd_ver.txt" ).Trim() );
                     }
-                    else {
-                        Console.WriteLine( $"Local build out of date.\nThis version: {G.__version__}\nRStable: {wc.DownloadString( "https://raw.githubusercontent.com/DeetonRushy/cmd/master/build/rel_upd_ver.txt" )}" );
+                    catch {
+                        ex_version = -1.0f;
                     }
+                }
+
+                if ( ex_version == in_version ) {
+                    Console.WriteLine( $"Local version is up to date! ({ex_version})" );
+                    return RetType._C_SUCCESS;
+                }
+
+                if ( ex_version > in_version ) {
+                    Console.WriteLine( $"Current build is out of date! [Local({in_version}), Stable({ex_version})]" );
+                    return RetType._C_SUCCESS;
+                }
+
+                if ( ex_version < in_version ) {
+                    G.CriticalError( "The current build is somehow ahead in versions than any stable. This build may be tampered with." );
                 }
 
                 return RetType._C_SUCCESS;
@@ -557,7 +528,7 @@ namespace cmd
                 int i = 0;
                 string _this = "(strace)";
 
-                foreach(StackFrame frame in trace.GetFrames() ) {
+                foreach ( StackFrame frame in trace.GetFrames() ) {
                     Console.Write( $"[(IL Offset): {frame.GetILOffset()}] {frame.GetMethod().Name} " );
                     if ( i == 0 ) {
                         Console.Write( _this );
@@ -610,7 +581,7 @@ namespace cmd
                     try {
                         tmpwc.DownloadFile( args[0], $"data\\temp\\{G.RandomString( 25 )}.tmp" );
                     }
-                    catch(WebException ex ) {
+                    catch ( WebException ex ) {
                         Console.WriteLine( $"{args[0]} is not a valid weblink, extra info: " + ex.Message );
                     }
                     catch {
@@ -636,10 +607,13 @@ namespace cmd
                     try {
                         wc.DownloadFile( args[0], args[1] );
                     }
-                    catch {
-                        Console.WriteLine( "There was an error when attempting to download the file." );
+                    catch ( WebException wex ) {
+                        Console.WriteLine( $"There was an error when attempting to download the file. [{wex.Message}([{wex.Status}])]" );
                         return RetType._C_FAILURE;
                     }
+
+                    Console.WriteLine( "Success, file written " + args[1] + " to " + G.host.Host["cmd.directory"].Value ); ;
+
                 }
 
                 return RetType._C_SUCCESS;
@@ -664,7 +638,100 @@ namespace cmd
 
             #endregion
 
+            #region LS
 
+            G.context.CreateCommand( "STD_LIST_DIRECTORY", ( ) => {
+
+                var cdirc = G.host.Host["cmd.directory"].Value;
+
+                Console.WriteLine( $"[({cdirc})]" );
+
+                string cvt( string fp ) {
+                    var _a = fp.Split( '\\' );
+                    return _a[_a.Length - 1];
+                }
+
+                IDictionary<string, DirectoryInfo> _FolderInformation = new Dictionary<string, DirectoryInfo>();
+
+                foreach ( string _i in Directory.GetDirectories( cdirc ) ) {
+                    DirectoryInfo info = new DirectoryInfo( _i );
+                    _FolderInformation.Add( _i, info );
+                }
+
+                foreach ( KeyValuePair<string, DirectoryInfo> inf in _FolderInformation ) {
+                    string Parent = String.IsNullOrEmpty( inf.Value.Parent.Name ) ? inf.Value.Parent.Name : "No Parent";
+                    Console.WriteLine( $"[folder] {cvt( inf.Key )}     | ({Parent})  | {inf.Value.LastWriteTime}" );
+                }
+
+                IDictionary<string, FileInfo> _FileInformation = new Dictionary<string, FileInfo>();
+
+                foreach ( string _i in Directory.GetFiles( cdirc ) ) {
+                    FileInfo info = new FileInfo( _i );
+                    _FileInformation.Add( _i, info );
+                }
+
+                foreach ( KeyValuePair<string, FileInfo> inf in _FileInformation ) {
+                    Console.WriteLine( $"[file] {cvt( inf.Key )}    | {inf.Value.Length}b  | {inf.Value.LastWriteTime}" );
+                }
+
+                return RetType._C_SUCCESS;
+            } );
+
+            #endregion
+
+            #region TOUCH
+
+            context.CreateCommand( "STD_TOUCH", ( args ) => {
+
+                string _arg = args[0];
+
+                if ( File.Exists( Path.Combine( Environment.CurrentDirectory, _arg ) ) ) {
+                    File.SetLastAccessTime( Path.Combine( Environment.CurrentDirectory, _arg ), DateTime.Now );
+                    return RetType._C_SUCCESS;
+                }
+
+                try {
+                    File.Create( Path.Combine( Environment.CurrentDirectory, _arg ) ).Dispose();
+                }
+                catch {
+                    G.Out( RetType._C_IOERROR, "Access is denied." );
+                    return RetType._C_IOERROR;
+                }
+
+                return RetType._C_SUCCESS;
+
+            } );
+
+            #endregion
+
+            #region DEL - DELETE FILE
+
+            context.CreateCommand( "FS_OP_DEL", ( args ) => {
+                string FileName = args[0]; // expected.
+                bool addpath = false;
+
+                if ( args.Length == 2 ) {
+                    if ( args[1] == "-P" ) {
+                        addpath = true;
+                    }
+                }
+
+                if ( addpath ) {
+                    FileName = Environment.CurrentDirectory + $"\\{FileName}";
+                }
+
+                if ( !File.Exists( FileName ) ) {
+                    return RetType._C_INVALID_PARAMS;
+                }
+
+                File.Delete( FileName );
+
+                return RetType._C_SUCCESS;
+            } );
+
+            #endregion
+
+            context.CreateCommand( "THIS_IS_A_TEST", ( ) => RetType._C_SUCCESS );
         }
 
         #endregion
